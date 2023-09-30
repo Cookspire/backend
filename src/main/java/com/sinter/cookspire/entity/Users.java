@@ -16,14 +16,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
-@Entity
 @Table(name = "users")
+@Entity
+@Data
+@NoArgsConstructor
 public class Users {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NonNull
@@ -38,6 +40,9 @@ public class Users {
     private String salt;
 
     @NonNull
+    private String password;
+
+    @NonNull
     @Column(length = 70)
     private String country;
 
@@ -49,21 +54,21 @@ public class Users {
     @UpdateTimestamp
     private LocalDateTime updatedOn;
 
-    @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Post> posts;
 
-    @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks;
 
-    @OneToMany(mappedBy = "follwerusers",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "follwerusers", cascade = CascadeType.ALL)
     private List<Follower> followers;
 
-    @OneToMany(mappedBy = "followeeUser",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "followeeUser", cascade = CascadeType.ALL)
     private List<Follower> followee;
 
-    @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "users",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
     private List<Replies> replies;
 }

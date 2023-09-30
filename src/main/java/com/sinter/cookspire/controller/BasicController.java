@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,14 +16,15 @@ import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.service.UserService;
 
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 
 @RestController
-public class UserController {
+public class BasicController {
 
     @Autowired
     UserService userService;
 
-    Logger logger = LoggerFactory.getLogger(UserController.class);
+    Logger logger = LoggerFactory.getLogger(BasicController.class);
 
     @PutMapping(value = "/persist/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> persistUser(@RequestBody UserDTO request) {
@@ -32,15 +32,15 @@ public class UserController {
         return new ResponseEntity<>(userService.persistUser(request), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetch/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchUser(@PathVariable(value = "userId") @Valid Long userId) {
-        logger.info("Entering persist user logic");
+    @PostMapping(value = "/fetch/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchUser(@PathParam(value = "userId") @Valid Long userId) {
+        logger.info("Entering fetch user logic");
         return new ResponseEntity<>(userService.fetchUser(userId), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/delete/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteUser(@PathVariable(value = "userId") @Valid Long userId) {
-        logger.info("Entering persist user logic");
+    @DeleteMapping(value = "/delete/user",produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> deleteUser(@PathParam(value = "userId") @Valid Long userId) {
+        logger.info("Entering delete user logic");
         return new ResponseEntity<>(userService.deleteUser(userId), HttpStatus.OK);
     }
 

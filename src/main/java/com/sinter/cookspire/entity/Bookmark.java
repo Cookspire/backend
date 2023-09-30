@@ -20,7 +20,7 @@ import lombok.Data;
 @Table(name = "bookmark")
 public class Bookmark {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
