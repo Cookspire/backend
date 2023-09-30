@@ -19,12 +19,12 @@ import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 
 @RestController
-public class BasicController {
+public class UserController {
 
     @Autowired
     UserService userService;
 
-    Logger logger = LoggerFactory.getLogger(BasicController.class);
+    Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @PutMapping(value = "/persist/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> persistUser(@RequestBody UserDTO request) {
