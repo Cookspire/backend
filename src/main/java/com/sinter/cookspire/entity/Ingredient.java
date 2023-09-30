@@ -22,7 +22,7 @@ import lombok.Data;
 public class Ingredient {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(length = 200, nullable = false)
