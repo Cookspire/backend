@@ -16,10 +16,10 @@ public class CommentDTO {
     private String content;
 
     @Nullable
-    private long likes;
+    private int likes;
 
     @Nullable
-    private long dislikes;
+    private int dislikes;
 
     @Nullable
     private LocalDateTime createdOn;

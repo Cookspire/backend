@@ -39,7 +39,6 @@ public class UserServiceImpl implements UserService {
         Users userEntity = new Users();
 
         if (request.getId() != 0 && chkUser.isPresent()) {
-            logger.info("Inside If");
             userEntity.setCreatedOn(chkUser.get().getCreatedOn());
             userEntity.setId(chkUser.get().getId());
         } else if (request.getId() == 0) {

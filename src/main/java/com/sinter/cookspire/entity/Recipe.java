@@ -46,7 +46,7 @@ public class Recipe {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = true)
-    private Post posts;
+    private Post post;
 
     @OneToMany(mappedBy = "recipes",cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks;

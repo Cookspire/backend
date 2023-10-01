@@ -49,9 +49,9 @@ public class Post {
     @JoinColumn(name = "createdBy")
     private Users users;
 
-    @OneToOne(mappedBy = "posts", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
     private Recipe recipe;
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
-    private List<Comment> comment;
+    private List<Comment> comments;
 }
