@@ -18,10 +18,10 @@ public class RepliesDTO {
     private long commentId;
 
     @Nullable
-    private long likes;
+    private int likes;
 
     @Nullable
-    private long dislikes;
+    private int dislikes;
 
     @Nullable
     private LocalDateTime createdOn;

@@ -5,9 +5,11 @@ import java.time.LocalDateTime;
 import com.sinter.cookspire.utils.Level;
 
 import io.micrometer.common.lang.Nullable;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class RecipeDTO {
 
     @Nullable
