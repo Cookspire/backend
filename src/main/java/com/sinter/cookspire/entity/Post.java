@@ -54,4 +54,7 @@ public class Post {
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @OneToMany(mappedBy = "posts",cascade = CascadeType.ALL)
+    private List<Bookmark> bookmarks;
 }

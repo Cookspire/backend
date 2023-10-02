@@ -36,12 +36,6 @@ public class BookmarkController {
         return new ResponseEntity<>(bookmarkService.persistBookmark(request), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetch/bookmark", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchBookmark(@PathParam(value = "userId") @Valid Long userId) {
-        logger.info("Entering fetch bookmark logic");
-        return new ResponseEntity<>(bookmarkService.fetchBookmark(userId), HttpStatus.OK);
-    }
-
     @PostMapping(value = "/fetchAll/bookmark/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetcAllBookmark(@PathParam(value = "userId") @Valid Long userId) {
         logger.info("Entering fetchAll bookmark logic");

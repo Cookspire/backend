@@ -11,8 +11,6 @@ public interface RepliesService {
 
     RepliesDTO persistReplies(RepliesDTO request);
 
-    RepliesDTO fetchReplies(@Valid Long repliesId);
-
     List<RepliesDTO> fetchAllReplies(@Valid Long commentId);
 
     ResponseDTO deleteReplies(@Valid Long repliesId);

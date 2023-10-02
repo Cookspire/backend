@@ -49,9 +49,6 @@ public class Recipe {
     private Post post;
 
     @OneToMany(mappedBy = "recipes",cascade = CascadeType.ALL)
-    private List<Bookmark> bookmarks;
-
-    @OneToMany(mappedBy = "recipes",cascade = CascadeType.ALL)
     private List<Ingredient> ingredients;
 
 }

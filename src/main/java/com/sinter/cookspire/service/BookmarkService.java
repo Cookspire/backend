@@ -11,10 +11,8 @@ public interface BookmarkService {
 
     BookmarkDTO persistBookmark(BookmarkDTO request);
 
-    BookmarkDTO fetchBookmark(@Valid Long userId);
-
     List<BookmarkDTO> fetchAllBookmark(@Valid Long userId);
 
-    ResponseDTO deleteBookmark(@Valid Long userId);
+    ResponseDTO deleteBookmark(@Valid Long bookmarkId);
 
 }
