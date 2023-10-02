@@ -11,12 +11,7 @@ public interface CommentService {
 
     CommentDTO persistComment(CommentDTO request);
 
-    CommentDTO fetchComment(@Valid Long userId);
-
-    List<CommentDTO> fetchAllComment(@Valid Long userId);
-
-    // change the response
-    Object fetchAllCommentByPost(@Valid Long postId);
+    List<CommentDTO> fetchAllCommentByPost(@Valid Long postId);
 
     ResponseDTO deleteComment(@Valid Long userId);
 

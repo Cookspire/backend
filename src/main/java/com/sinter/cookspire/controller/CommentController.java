@@ -36,19 +36,7 @@ public class CommentController {
         return new ResponseEntity<>(commentService.persistComment(request), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetch/comment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchComment(@PathParam(value = "userId") @Valid Long userId) {
-        logger.info("Entering fetch comment logic");
-        return new ResponseEntity<>(commentService.fetchComment(userId), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/fetchAll/comment/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetcAllComment(@PathParam(value = "userId") @Valid Long userId) {
-        logger.info("Entering fetchAll comment logic");
-        return new ResponseEntity<>(commentService.fetchAllComment(userId), HttpStatus.OK);
-    }
-
-      @PostMapping(value = "/fetchAll/comment/post", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/fetchAll/comment/post", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetcAllCommentByPost(@PathParam(value = "postId") @Valid Long postId) {
         logger.info("Entering fetchAll comment by posts logic");
         return new ResponseEntity<>(commentService.fetchAllCommentByPost(postId), HttpStatus.OK);

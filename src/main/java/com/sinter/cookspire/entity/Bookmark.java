@@ -24,8 +24,8 @@ public class Bookmark {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receipe_id")
-    private Recipe recipes;
+    @JoinColumn(name = "post_id")
+    private Post posts;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "createdBy")

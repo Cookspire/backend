@@ -35,12 +35,6 @@ public class RepliesController {
         return new ResponseEntity<>(repliesService.persistReplies(request), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetch/replies", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchReplies(@PathParam(value = "repliesId") @Valid Long repliesId) {
-        logger.info("Entering fetch replies logic");
-        return new ResponseEntity<>(repliesService.fetchReplies(repliesId), HttpStatus.OK);
-    }
-
     @PostMapping(value = "/fetchAll/replies/comment", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetcAllReplies(@PathParam(value = "commentId") @Valid Long commentId) {
         logger.info("Entering fetchAll replies logic");
