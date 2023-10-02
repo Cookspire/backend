@@ -10,6 +10,6 @@ import com.sinter.cookspire.entity.Replies;
 @Transactional
 public interface RepliesRepository extends JpaRepository<Replies, Long> {
 
-    List<Replies> findAllByComment(Comment comment);
+    List<Replies> findAllByComments(Comment comment);
 
 }

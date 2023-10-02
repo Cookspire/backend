@@ -99,7 +99,7 @@ public class CommentServiceImpl implements CommentService {
 
         if (chkPost.isPresent()) {
 
-            List<Comment> comments = commentRepo.findAllByPost(chkPost.get());
+            List<Comment> comments = commentRepo.findAllByPosts(chkPost.get());
             for (var comment : comments) {
                 response.add(new CommentDTO(comment.getId(), comment.getUsers().getId(), comment.getContent(),
                         comment.getLikes(), comment.getDislikes(), comment.getCreatedOn(),

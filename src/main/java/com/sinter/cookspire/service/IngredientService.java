@@ -9,12 +9,10 @@ import jakarta.validation.Valid;
 
 public interface IngredientService {
 
-    IngredientDTO persistIngredient(IngredientDTO request);
-
-    IngredientDTO fetchIngredient(@Valid Long userId);
+    List<IngredientDTO> persistIngredient(List<IngredientDTO> request);
 
     ResponseDTO deleteIngredient(@Valid Long ingredientId);
 
-    List<IngredientDTO> fetchAllIngredient();
+    List<IngredientDTO> fetchAllIngredient(@Valid long recipeId);
 
 }

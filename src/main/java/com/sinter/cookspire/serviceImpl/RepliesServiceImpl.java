@@ -100,7 +100,7 @@ public class RepliesServiceImpl implements RepliesService {
 
         if (chkComment.isPresent()) {
 
-            List<Replies> replies = repliesRepo.findAllByComment(chkComment.get());
+            List<Replies> replies = repliesRepo.findAllByComments(chkComment.get());
             for (var reply : replies) {
                 response.add(new RepliesDTO(reply.getId(), reply.getUsers().getId(), reply.getContent(),
                         reply.getComments().getId(),

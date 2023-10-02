@@ -10,6 +10,6 @@ import com.sinter.cookspire.entity.Post;
 @Transactional
 public interface CommentRespository extends JpaRepository<Comment, Long>{
 
-    List<Comment> findAllByPost(Post post);
+    List<Comment> findAllByPosts(Post post);
     
 }
