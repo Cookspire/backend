@@ -8,7 +8,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.sinter.cookspire.utils.Level;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,9 +37,9 @@ public class Recipe {
     @Lob
     private String instruction;
 
-    /*
-     * private String name;
-     */
+    @NonNull
+    @Column(length = 150)
+    private String name;
 
     @Enumerated(EnumType.ORDINAL)
     private Level level;
@@ -52,7 +54,7 @@ public class Recipe {
     @JoinColumn(name = "post_id", nullable = true)
     private Post post;
 
-    @OneToMany(mappedBy = "recipes",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipes", cascade = CascadeType.ALL)
     private List<Ingredient> ingredients;
 
 }

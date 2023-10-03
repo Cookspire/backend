@@ -6,12 +6,15 @@ import java.util.Map;
 
 import com.sinter.cookspire.utils.Level;
 
+import io.micrometer.common.lang.NonNull;
 import io.micrometer.common.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class RecipeDTO {
 
     @Nullable
@@ -22,6 +25,9 @@ public class RecipeDTO {
     private long postId;
 
     private Level difficulty;
+
+    @NonNull
+    private String name;
 
     @Nullable
     private LocalDateTime createdOn;
