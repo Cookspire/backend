@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.service.UserService;
 
@@ -38,10 +39,22 @@ public class UserController {
         return new ResponseEntity<>(userService.fetchUser(userId), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/delete/user",produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/delete/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteUser(@PathParam(value = "userId") @Valid Long userId) {
         logger.info("Entering delete user logic");
         return new ResponseEntity<>(userService.deleteUser(userId), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/follow/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> followUser(@RequestBody FollowerDTO request) {
+        logger.info("Entering persist follower info");
+        return new ResponseEntity<>(userService.persistFollower(request), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetchAll/followersInfo", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchAllFollowerInfo(@PathParam(value = "userId") @Valid long userId) {
+        logger.info("Entering fetch all follower info");
+        return new ResponseEntity<>(userService.fetchAllFollowers(userId), HttpStatus.OK);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.sinter.cookspire.serviceImpl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -11,10 +13,15 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.sinter.cookspire.dto.FollowerDTO;
+import com.sinter.cookspire.dto.FollowerResponseDTO;
+import com.sinter.cookspire.dto.FollowersDataDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
+import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Users;
 import com.sinter.cookspire.exception.ApplicationException;
+import com.sinter.cookspire.repository.FollowerRepository;
 import com.sinter.cookspire.repository.UserRepository;
 import com.sinter.cookspire.service.UserService;
 
@@ -25,6 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepo;
+
+    @Autowired
+    FollowerRepository followerRepo;
 
     @Autowired
     MessageSource msgSrc;
@@ -80,7 +90,8 @@ public class UserServiceImpl implements UserService {
         long userId = userRepo.save(userEntity).getId();
         logger.info("Exit from Persisting User.");
         return new UserDTO(userId, userEntity.getUsername(), userEntity.getEmail(), userEntity.getPassword(),
-                userEntity.getCountry(), userEntity.isVerified(), userEntity.getBio(), userEntity.getCreatedOn(), userEntity.getUpdatedOn());
+                userEntity.getCountry(), userEntity.isVerified(), userEntity.getBio(), userEntity.getCreatedOn(),
+                userEntity.getUpdatedOn());
     }
 
     @Override
@@ -114,6 +125,87 @@ public class UserServiceImpl implements UserService {
         } else {
             logger.warn("User not found");
             logger.info("Exit from Deleting User.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public FollowerDTO persistFollower(FollowerDTO request) {
+
+        if (request.getFolloweeId() == request.getFollowerId()) {
+            logger.warn("Function not allowed");
+            logger.info("Exit from Persist Follow User.");
+            throw new ApplicationException(msgSrc.getMessage("User.SelfFollow", null, Locale.ENGLISH),
+                    HttpStatus.BAD_REQUEST);
+        }
+        Optional<Users> chkFollowerUser = userRepo.findById(request.getFollowerId());
+        Optional<Users> chkFolloweeUser = userRepo.findById(request.getFolloweeId());
+
+        if (chkFolloweeUser.isPresent() && chkFollowerUser.isPresent()) {
+            Follower followerEntity = new Follower();
+            Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkFollowerUser.get(),
+                    chkFolloweeUser.get());
+            if (request.isFollowUser()) {
+
+                if (chkFollower.isPresent()) {
+                    followerEntity.setId(chkFollower.get().getId());
+                    followerEntity.setCreatedOn(chkFollower.get().getCreatedOn());
+                }
+                followerEntity.setFolloweeUsers(chkFollowerUser.get());
+                followerEntity.setFollowerUsers(chkFolloweeUser.get());
+                followerEntity.setUpdatedOn(LocalDateTime.now());
+
+                followerRepo.save(followerEntity);
+
+                return new FollowerDTO(followerEntity.getFolloweeUsers().getId(),
+                        followerEntity.getFollowerUsers().getId(), request.isFollowUser());
+
+            } else {
+                followerRepo.deleteById(chkFollower.get().getId());
+                return request;
+            }
+
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from Persist Follow User.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public FollowerResponseDTO fetchAllFollowers(@Valid long userId) {
+        Optional<Users> chkUser = userRepo.findById(userId);
+
+        FollowerResponseDTO response = new FollowerResponseDTO();
+
+        List<FollowersDataDTO> followerList = new ArrayList<FollowersDataDTO>();
+
+        List<FollowersDataDTO> followeeList = new ArrayList<FollowersDataDTO>();
+
+        if (chkUser.isPresent()) {
+            List<Follower> followers = followerRepo.findAllByFollowerUsers(chkUser.get());
+
+            List<Follower> following = followerRepo.findAllByFolloweeUsers(chkUser.get());
+
+            for (var followerEntity : followers) {
+                followerList.add(new FollowersDataDTO(followerEntity.getFolloweeUsers().getUsername(),
+                        followerEntity.getFolloweeUsers().isVerified()));
+            }
+            response.setFollowers(followerList);
+
+            for (var followeeEntity : following) {
+                followeeList.add(new FollowersDataDTO(followeeEntity.getFollowerUsers().getUsername(),
+                        followeeEntity.getFollowerUsers().isVerified()));
+            }
+            response.setFollowing(followeeList);
+
+            return response;
+
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from fetcing all followers.");
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }

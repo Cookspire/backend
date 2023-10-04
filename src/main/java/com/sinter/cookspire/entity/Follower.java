@@ -26,11 +26,11 @@ public class Follower {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id")
-    private Users follwerusers;
+    private Users followerUsers;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users followeeUser;
+    private Users followeeUsers;
 
     @CreationTimestamp
     private LocalDateTime createdOn;
