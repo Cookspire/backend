@@ -66,6 +66,8 @@ public class UserServiceImpl implements UserService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        userEntity.setBio(request.getBio());
+
         userEntity.setUsername(request.getUsername());
         userEntity.setPassword(request.getPassword());
         userEntity.setEmail(request.getEmail());
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
         long userId = userRepo.save(userEntity).getId();
         logger.info("Exit from Persisting User.");
         return new UserDTO(userId, userEntity.getUsername(), userEntity.getEmail(), userEntity.getPassword(),
-                userEntity.getCountry(), userEntity.isVerified(), userEntity.getCreatedOn(), userEntity.getUpdatedOn());
+                userEntity.getCountry(), userEntity.isVerified(), userEntity.getBio(), userEntity.getCreatedOn(), userEntity.getUpdatedOn());
     }
 
     @Override
@@ -90,7 +92,7 @@ public class UserServiceImpl implements UserService {
             Users userEntity = chkUser.get();
             return new UserDTO(userEntity.getId(), userEntity.getUsername(), userEntity.getEmail(),
                     userEntity.getPassword(),
-                    userEntity.getCountry(), userEntity.isVerified(), userEntity.getCreatedOn(),
+                    userEntity.getCountry(), userEntity.isVerified(), userEntity.getBio(), userEntity.getCreatedOn(),
                     userEntity.getUpdatedOn());
         }
 

@@ -24,56 +24,55 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Users {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @NonNull
-    @Column(length = 50)
-    private String username;
+  @NonNull
+  @Column(length = 50)
+  private String username;
 
-    @NonNull
-    @Column(length = 200)
-    private String email;
+  @NonNull
+  @Column(length = 200)
+  private String email;
 
-    @NonNull
-    private String salt;
+  @NonNull
+  private String salt;
 
-    @NonNull
-    private String password;
-    
-    /*
-       @Column(length = 150)
-     * private String bio;
-     */
+  @NonNull
+  private String password;
 
-    @NonNull
-    @Column(length = 70)
-    private String country;
+  @NonNull
+  @Column(length = 150)
+  private String bio;
 
-    private boolean isVerified;
+  @NonNull
+  @Column(length = 70)
+  private String country;
 
-    @CreationTimestamp
-    private LocalDateTime createdOn;
+  private boolean isVerified;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedOn;
+  @CreationTimestamp
+  private LocalDateTime createdOn;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Post> posts;
+  @UpdateTimestamp
+  private LocalDateTime updatedOn;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Bookmark> bookmarks;
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  private List<Post> posts;
 
-    @OneToMany(mappedBy = "follwerusers", cascade = CascadeType.ALL)
-    private List<Follower> followers;
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  private List<Bookmark> bookmarks;
 
-    @OneToMany(mappedBy = "followeeUser", cascade = CascadeType.ALL)
-    private List<Follower> followee;
+  @OneToMany(mappedBy = "follwerusers", cascade = CascadeType.ALL)
+  private List<Follower> followers;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Comment> comments;
+  @OneToMany(mappedBy = "followeeUser", cascade = CascadeType.ALL)
+  private List<Follower> followee;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
-    private List<Replies> replies;
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  private List<Comment> comments;
+
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  private List<Replies> replies;
 }

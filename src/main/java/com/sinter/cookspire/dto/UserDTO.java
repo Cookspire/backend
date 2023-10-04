@@ -30,9 +30,11 @@ public class UserDTO {
     @NonNull
     private Boolean isVerified;
 
+    @NonNull
+    private String bio;
+
     private LocalDateTime createdOn;
 
     private LocalDateTime updatedOn;
 
-    
 }
