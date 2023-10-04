@@ -64,10 +64,10 @@ public class Users {
   @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Bookmark> bookmarks;
 
-  @OneToMany(mappedBy = "follwerusers", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "followerUsers", cascade = CascadeType.ALL)
   private List<Follower> followers;
 
-  @OneToMany(mappedBy = "followeeUser", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "followeeUsers", cascade = CascadeType.ALL)
   private List<Follower> followee;
 
   @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
