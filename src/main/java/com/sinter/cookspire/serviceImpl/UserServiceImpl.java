@@ -146,6 +146,12 @@ public class UserServiceImpl implements UserService {
             Follower followerEntity = new Follower();
             Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkFollowerUser.get(),
                     chkFolloweeUser.get());
+            if (chkFollower.isEmpty()) {
+                logger.warn("User not found");
+                logger.info("Exit from Persist Follow User.");
+                throw new ApplicationException(msgSrc.getMessage("User.NotFollowed", null, Locale.ENGLISH),
+                        HttpStatus.NOT_FOUND);
+            }
             if (request.isFollowUser()) {
 
                 if (chkFollower.isPresent()) {
