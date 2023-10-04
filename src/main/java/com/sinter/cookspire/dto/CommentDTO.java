@@ -15,6 +15,8 @@ public class CommentDTO {
 
     private long createdBy;
 
+    private long postId;
+
     private String content;
 
     @Nullable

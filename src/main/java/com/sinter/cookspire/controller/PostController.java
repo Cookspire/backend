@@ -37,9 +37,9 @@ public class PostController {
     }
 
     @PostMapping(value = "/fetch/post", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchPost(@PathParam(value = "userId") @Valid Long userId) {
+    public ResponseEntity<?> fetchPost(@PathParam(value = "postId") @Valid Long postId) {
         logger.info("Entering fetch post logic");
-        return new ResponseEntity<>(postService.fetchPost(userId), HttpStatus.OK);
+        return new ResponseEntity<>(postService.fetchPost(postId), HttpStatus.OK);
     }
 
     @PostMapping(value = "/fetchAll/post/user", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,9 +49,9 @@ public class PostController {
     }
 
     @DeleteMapping(value = "/delete/post", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deletePost(@PathParam(value = "userId") @Valid Long userId) {
+    public ResponseEntity<?> deletePost(@PathParam(value = "postId") @Valid Long postId) {
         logger.info("Entering delete post logic");
-        return new ResponseEntity<>(postService.deletePost(userId), HttpStatus.OK);
+        return new ResponseEntity<>(postService.deletePost(postId), HttpStatus.OK);
     }
 
 }

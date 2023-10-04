@@ -35,6 +35,10 @@ public class Recipe {
     @Lob
     private String instruction;
 
+    /*
+     * private String name;
+     */
+
     @Enumerated(EnumType.ORDINAL)
     private Level level;
 

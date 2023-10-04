@@ -43,8 +43,8 @@ public class CommentController {
     }
 
     @DeleteMapping(value = "/delete/comment", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> deleteComment(@PathParam(value = "userId") @Valid Long userId) {
+    public ResponseEntity<?> deleteComment(@PathParam(value = "commentId") @Valid Long commentId) {
         logger.info("Entering delete comment logic");
-        return new ResponseEntity<>(commentService.deleteComment(userId), HttpStatus.OK);
+        return new ResponseEntity<>(commentService.deleteComment(commentId), HttpStatus.OK);
     }
 }

@@ -11,10 +11,10 @@ public interface PostService {
 
     PostDTO persistPost(PostDTO request);
 
-    PostDTO fetchPost(@Valid Long userId);
+    PostDTO fetchPost(@Valid Long postId);
 
     List<PostDTO> fetchAllPost(@Valid Long userId);
 
-    ResponseDTO deletePost(@Valid Long userId);
+    ResponseDTO deletePost(@Valid Long postId);
 
 }

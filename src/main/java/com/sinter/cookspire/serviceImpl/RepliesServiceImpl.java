@@ -71,6 +71,15 @@ public class RepliesServiceImpl implements RepliesService {
         } else
             repliesEntity.setUsers(chkUser.get());
 
+        Optional<Comment> chkComment = commentRepo.findById(request.getCommentId());
+        if (chkComment.isEmpty()) {
+            logger.error("Error occured while persisting replies.");
+            logger.info("Exit from persisting replies.");
+            throw new ApplicationException(msgSrc.getMessage("Comment.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        } else
+            repliesEntity.setComments(chkComment.get());
+
         repliesEntity.setContent(request.getContent());
         if (request.getLikes() == 0 && chkReplies.isPresent())
             repliesEntity.setLikes(chkReplies.get().getLikes());
