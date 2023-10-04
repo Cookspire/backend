@@ -87,6 +87,9 @@ public class RecipeServiceImpl implements RecipeService {
 
         if (chkPost.isPresent()) {
             Optional<Recipe> chkRecipe = recipeRepo.findByPost(chkPost.get());
+            if (chkRecipe.isEmpty()) {
+                return new RecipeDTO(0, null, 0, null, null, null);
+            }
             Recipe recipeEntity = chkRecipe.get();
             return new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getPost().getId(),
                     recipeEntity.getLevel(), recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn());

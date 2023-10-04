@@ -63,12 +63,21 @@ public class CommentServiceImpl implements CommentService {
 
         Optional<Users> chkUser = userRepo.findById(request.getCreatedBy());
         if (chkUser.isEmpty()) {
-            logger.error("Error occured while persisting post.");
-            logger.info("Exit from persisting post.");
+            logger.error("Error occured while persisting comment.");
+            logger.info("Exit from persisting comment.");
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         } else
             commentEntity.setUsers(chkUser.get());
+
+        Optional<Post> chkPost = postRepo.findById(request.getPostId());
+        if (chkUser.isEmpty()) {
+            logger.error("Error occured while persisting post.");
+            logger.info("Exit from persisting post.");
+            throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        } else
+            commentEntity.setPosts(chkPost.get());
 
         commentEntity.setContent(request.getContent());
         if (request.getLikes() == 0 && chkComment.isPresent())
@@ -85,7 +94,8 @@ public class CommentServiceImpl implements CommentService {
 
         long commentId = commentRepo.save(commentEntity).getId();
         logger.info("Exit from persisting comment.");
-        return new CommentDTO(commentId, commentEntity.getUsers().getId(), commentEntity.getContent(),
+        return new CommentDTO(commentId, commentEntity.getUsers().getId(), commentEntity.getPosts().getId(),
+                commentEntity.getContent(),
                 commentEntity.getLikes(), commentEntity.getDislikes(), commentEntity.getCreatedOn(),
                 commentEntity.getUpdatedOn());
     }
@@ -101,7 +111,8 @@ public class CommentServiceImpl implements CommentService {
 
             List<Comment> comments = commentRepo.findAllByPosts(chkPost.get());
             for (var comment : comments) {
-                response.add(new CommentDTO(comment.getId(), comment.getUsers().getId(), comment.getContent(),
+                response.add(new CommentDTO(comment.getId(), comment.getUsers().getId(), comment.getPosts().getId(),
+                        comment.getContent(),
                         comment.getLikes(), comment.getDislikes(), comment.getCreatedOn(),
                         comment.getUpdatedOn()));
             }

@@ -41,6 +41,11 @@ public class Users {
 
     @NonNull
     private String password;
+    
+    /*
+       @Column(length = 150)
+     * private String bio;
+     */
 
     @NonNull
     @Column(length = 70)

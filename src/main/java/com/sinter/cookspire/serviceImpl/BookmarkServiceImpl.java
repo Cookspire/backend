@@ -71,10 +71,11 @@ public class BookmarkServiceImpl implements BookmarkService {
             bookmarkEntity.setUsers(chkUser.get());
 
         Optional<Post> chkPost = postRepo.findById(request.getPostId());
-        if (chkPost.isEmpty()) {
+    
+        if (chkPost.isEmpty() || bookmarkRepo.findByPostsAndUsers(chkPost.get(), chkUser.get()).isPresent()) {
             logger.error("Error occured while persisting bookmark.");
             logger.info("Exit from persisting bookmark.");
-            throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
+            throw new ApplicationException(msgSrc.getMessage("Bookmark.Error", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         } else
             bookmarkEntity.setPosts(chkPost.get());

@@ -41,6 +41,15 @@ public class UserServiceImpl implements UserService {
         if (request.getId() != 0 && chkUser.isPresent()) {
             userEntity.setCreatedOn(chkUser.get().getCreatedOn());
             userEntity.setId(chkUser.get().getId());
+            if (chkUser.get().getEmail() != request.getEmail()) {
+                Optional<Users> chkEmail = userRepo.findByEmail(request.getEmail());
+                if (chkEmail.isPresent()) {
+                    logger.error("Error Occured while persisting User Information.");
+                    logger.info("Exit from Persisting User.");
+                    throw new ApplicationException(msgSrc.getMessage("User.EmailExist", null, Locale.ENGLISH),
+                            HttpStatus.BAD_REQUEST);
+                }
+            }
         } else if (request.getId() == 0) {
             Optional<Users> chkEmail = userRepo.findByEmail(request.getEmail());
             if (chkEmail.isPresent()) {

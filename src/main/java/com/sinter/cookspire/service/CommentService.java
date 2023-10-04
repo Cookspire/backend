@@ -13,6 +13,6 @@ public interface CommentService {
 
     List<CommentDTO> fetchAllCommentByPost(@Valid Long postId);
 
-    ResponseDTO deleteComment(@Valid Long userId);
+    ResponseDTO deleteComment(@Valid Long commentId);
 
 }
