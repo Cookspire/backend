@@ -18,6 +18,8 @@ import com.sinter.cookspire.dto.FollowerResponseDTO;
 import com.sinter.cookspire.dto.FollowersDataDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
+import com.sinter.cookspire.dto.UserResponseDTO;
+import com.sinter.cookspire.dto.VerifyUserDTO;
 import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Users;
 import com.sinter.cookspire.exception.ApplicationException;
@@ -215,6 +217,22 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
+    }
+
+    @Override
+    public UserResponseDTO verifyUser(VerifyUserDTO request) {
+
+        Optional<Users> chkUser = userRepo.findByEmailAndPassword(request.getEmail(), request.getPassword());
+
+        if (chkUser.isPresent()) {
+            return new UserResponseDTO(chkUser.get().getId(), chkUser.get().getUsername(), chkUser.get().getEmail(),
+                    chkUser.get().getCountry(), chkUser.get().isVerified(), chkUser.get().getBio(),
+                    chkUser.get().getCreatedOn(), chkUser.get().getUpdatedOn());
+        } else {
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.UNAUTHORIZED);
+        }
+
     }
 
 }
