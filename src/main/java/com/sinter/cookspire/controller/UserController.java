@@ -1,7 +1,6 @@
 package com.sinter.cookspire.controller;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,11 +25,12 @@ import com.sinter.cookspire.service.RefreshTokenService;
 import com.sinter.cookspire.service.UserService;
 import com.sinter.cookspire.utils.JWTUtils;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
-@CrossOrigin("*")
 public class UserController {
 
     @Autowired
