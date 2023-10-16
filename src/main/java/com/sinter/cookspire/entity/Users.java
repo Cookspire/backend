@@ -75,4 +75,7 @@ public class Users {
 
   @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Replies> replies;
+
+  @OneToMany(mappedBy = "users", cascade= CascadeType.ALL)
+  private List<RefreshToken> refreshTokens;
 }
