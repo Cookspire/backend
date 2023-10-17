@@ -5,7 +5,6 @@ import com.sinter.cookspire.dto.FollowerResponseDTO;
 import com.sinter.cookspire.dto.JWTResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
-import com.sinter.cookspire.dto.UserResponseDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
 
 import jakarta.validation.Valid;
