@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,16 +17,19 @@ import org.springframework.stereotype.Service;
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.FollowerResponseDTO;
 import com.sinter.cookspire.dto.FollowersDataDTO;
+import com.sinter.cookspire.dto.JWTResponseDTO;
+import com.sinter.cookspire.dto.RefreshTokenDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
-import com.sinter.cookspire.dto.UserResponseDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
 import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Users;
 import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.repository.FollowerRepository;
 import com.sinter.cookspire.repository.UserRepository;
+import com.sinter.cookspire.service.RefreshTokenService;
 import com.sinter.cookspire.service.UserService;
+import com.sinter.cookspire.utils.JWTUtils;
 
 import jakarta.validation.Valid;
 
@@ -40,6 +44,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     MessageSource msgSrc;
+
+    @Autowired
+    RefreshTokenService refreshTokenService;
+
+    @Autowired
+    JWTUtils jwtService;
 
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -146,14 +156,18 @@ public class UserServiceImpl implements UserService {
 
         if (chkFolloweeUser.isPresent() && chkFollowerUser.isPresent()) {
             Follower followerEntity = new Follower();
-            Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkFollowerUser.get(),
-                    chkFolloweeUser.get());
-            if (chkFollower.isEmpty()) {
+            Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkFolloweeUser.get(),
+                    chkFollowerUser.get());
+
+            System.out.println(chkFollower.isPresent());
+
+            if (chkFollower.isPresent()) {
                 logger.warn("User not found");
                 logger.info("Exit from Persist Follow User.");
-                throw new ApplicationException(msgSrc.getMessage("User.NotFollowed", null, Locale.ENGLISH),
+                throw new ApplicationException(msgSrc.getMessage("User.Followed", null, Locale.ENGLISH),
                         HttpStatus.NOT_FOUND);
             }
+
             if (request.isFollowUser()) {
 
                 if (chkFollower.isPresent()) {
@@ -170,6 +184,12 @@ public class UserServiceImpl implements UserService {
                         followerEntity.getFollowerUsers().getId(), request.isFollowUser());
 
             } else {
+                if (chkFollower.isEmpty()) {
+                    logger.warn("User not found");
+                    logger.info("Exit from Persist Follow User.");
+                    throw new ApplicationException(msgSrc.getMessage("User.NotFollowed", null, Locale.ENGLISH),
+                            HttpStatus.NOT_FOUND);
+                }
                 followerRepo.deleteById(chkFollower.get().getId());
                 return request;
             }
@@ -220,14 +240,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO verifyUser(VerifyUserDTO request) {
+    public JWTResponseDTO verifyUser(VerifyUserDTO request) {
 
         Optional<Users> chkUser = userRepo.findByEmailAndPassword(request.getEmail(), request.getPassword());
 
         if (chkUser.isPresent()) {
-            return new UserResponseDTO(chkUser.get().getId(), chkUser.get().getUsername(), chkUser.get().getEmail(),
-                    chkUser.get().getCountry(), chkUser.get().isVerified(), chkUser.get().getBio(),
-                    chkUser.get().getCreatedOn(), chkUser.get().getUpdatedOn());
+            String access_token = jwtService.createToken(chkUser.get().getEmail());
+            String refresh = refreshTokenService
+                    .persistToken(new RefreshTokenDTO(0, UUID.randomUUID().toString(), chkUser.get().getEmail(),
+                            LocalDateTime.now().plusHours(5)))
+                    .getToken();
+            return new JWTResponseDTO(chkUser.get().getEmail(), access_token, refresh);
         } else {
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.UNAUTHORIZED);

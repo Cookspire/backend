@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sinter.cookspire.dto.RepliesDTO;
 import com.sinter.cookspire.service.RepliesService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
-
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 public class RepliesController {
     @Autowired
