@@ -43,7 +43,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         if (chkUser.isPresent()) {
 
-            Optional<RefreshToken> chkToken = refreshTokenRepository.findByToken(request.getToken());
+            Optional<RefreshToken> chkToken = refreshTokenRepository.findById(request.getId());
             RefreshToken tokenEntity = new RefreshToken();
             if (chkToken.isPresent()) {
                 tokenEntity.setId(request.getId());

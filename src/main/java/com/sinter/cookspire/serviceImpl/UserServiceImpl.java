@@ -156,14 +156,18 @@ public class UserServiceImpl implements UserService {
 
         if (chkFolloweeUser.isPresent() && chkFollowerUser.isPresent()) {
             Follower followerEntity = new Follower();
-            Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkFollowerUser.get(),
-                    chkFolloweeUser.get());
-            if (chkFollower.isEmpty()) {
+            Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkFolloweeUser.get(),
+                    chkFollowerUser.get());
+
+            System.out.println(chkFollower.isPresent());
+
+            if (chkFollower.isPresent()) {
                 logger.warn("User not found");
                 logger.info("Exit from Persist Follow User.");
-                throw new ApplicationException(msgSrc.getMessage("User.NotFollowed", null, Locale.ENGLISH),
+                throw new ApplicationException(msgSrc.getMessage("User.Followed", null, Locale.ENGLISH),
                         HttpStatus.NOT_FOUND);
             }
+
             if (request.isFollowUser()) {
 
                 if (chkFollower.isPresent()) {
@@ -180,6 +184,12 @@ public class UserServiceImpl implements UserService {
                         followerEntity.getFollowerUsers().getId(), request.isFollowUser());
 
             } else {
+                if (chkFollower.isEmpty()) {
+                    logger.warn("User not found");
+                    logger.info("Exit from Persist Follow User.");
+                    throw new ApplicationException(msgSrc.getMessage("User.NotFollowed", null, Locale.ENGLISH),
+                            HttpStatus.NOT_FOUND);
+                }
                 followerRepo.deleteById(chkFollower.get().getId());
                 return request;
             }
@@ -235,9 +245,11 @@ public class UserServiceImpl implements UserService {
         Optional<Users> chkUser = userRepo.findByEmailAndPassword(request.getEmail(), request.getPassword());
 
         if (chkUser.isPresent()) {
-            String access_token=jwtService.createToken(chkUser.get().getEmail());
-            String refresh=refreshTokenService.persistToken(new RefreshTokenDTO(0,UUID.randomUUID().toString(), chkUser.get().getEmail(),
-                    LocalDateTime.now().plusMinutes(5))).getToken();
+            String access_token = jwtService.createToken(chkUser.get().getEmail());
+            String refresh = refreshTokenService
+                    .persistToken(new RefreshTokenDTO(0, UUID.randomUUID().toString(), chkUser.get().getEmail(),
+                            LocalDateTime.now().plusHours(5)))
+                    .getToken();
             return new JWTResponseDTO(chkUser.get().getEmail(), access_token, refresh);
         } else {
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),

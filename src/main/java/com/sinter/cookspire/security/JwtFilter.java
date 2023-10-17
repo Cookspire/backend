@@ -1,11 +1,14 @@
 package com.sinter.cookspire.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -35,11 +38,16 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
-            boolean chkToken = jwtUtils.decodeToken(token);
+            boolean chkToken = jwtUtils.decodeToken(token).isValid();
 
             if (!chkToken)
                 throw new ApplicationException(msgSrc.getMessage("User.Forbidden", null, Locale.ENGLISH),
                         HttpStatus.FORBIDDEN);
+
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    "test@gmail.com", null,new ArrayList<>());
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
         }
         filterChain.doFilter(request, response);

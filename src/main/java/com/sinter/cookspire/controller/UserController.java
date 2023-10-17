@@ -1,8 +1,5 @@
 package com.sinter.cookspire.controller;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sinter.cookspire.dto.FollowerDTO;
-import com.sinter.cookspire.dto.JWTResponseDTO;
-import com.sinter.cookspire.dto.RefreshTokenDTO;
-import com.sinter.cookspire.dto.RefreshTokenRequestDTO;
 import com.sinter.cookspire.dto.UserDTO;
-import com.sinter.cookspire.dto.VerifyUserDTO;
 import com.sinter.cookspire.service.RefreshTokenService;
 import com.sinter.cookspire.service.UserService;
 import com.sinter.cookspire.utils.JWTUtils;
@@ -49,13 +42,7 @@ public class UserController {
         logger.info("Entering persist user logic");
         return new ResponseEntity<>(userService.persistUser(request), HttpStatus.OK);
     }
-
-    @PostMapping(value = "/verify/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> verifyUser(@RequestBody VerifyUserDTO request) {
-        logger.info("Entering verify user logic");
-        return new ResponseEntity<>(userService.verifyUser(request), HttpStatus.OK);
-    }
-
+    
     @PostMapping(value = "/fetch/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetchUser(@PathParam(value = "userId") @Valid Long userId) {
         logger.info("Entering fetch user logic");
@@ -78,21 +65,6 @@ public class UserController {
     public ResponseEntity<?> fetchAllFollowerInfo(@PathParam(value = "userId") @Valid long userId) {
         logger.info("Entering fetch all follower info");
         return new ResponseEntity<>(userService.fetchAllFollowers(userId), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/refresh/token")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequestDTO request) {
-        logger.info("Entering refresh token logic");
-
-        RefreshTokenDTO response = refreshTokenService.verifyToken(request.getToken());
-
-        String access_token = jwtUtils.createToken(response.getEmail());
-
-        RefreshTokenDTO updrefresh = refreshTokenService.persistToken(new RefreshTokenDTO(response.getId(),
-                UUID.randomUUID().toString(), response.getEmail(), LocalDateTime.now().plusMinutes(5)));
-
-        return new ResponseEntity<>(new JWTResponseDTO(response.getEmail(), access_token, updrefresh.getToken()),
-                HttpStatus.OK);
     }
 
 }
