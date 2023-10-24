@@ -7,6 +7,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,6 +22,7 @@ import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 @SecurityRequirement(name = "bearerAuth")
 @RestController
+@CrossOrigin("*")
 public class RepliesController {
     @Autowired
     RepliesService repliesService;
