@@ -2,35 +2,32 @@ package com.sinter.cookspire.dto;
 
 import java.time.LocalDateTime;
 
+import io.micrometer.common.lang.NonNull;
 import io.micrometer.common.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class PostDTO {
+@NoArgsConstructor
+public class PostInteractionDTO {
 
     @Nullable
     private long id;
 
-    private String content;
-
+    @NonNull
     private long createdBy;
 
-    @Nullable
-    private long likes;
+    @NonNull
+    private long postId;
 
-    @Nullable
-    private long dislikes;
-
-    private boolean hasLiked;
-
-    private boolean hasDisliked;
+    @NonNull
+    private boolean isLiked;
 
     @Nullable
     private LocalDateTime createdOn;
 
     @Nullable
     private LocalDateTime updatedOn;
-
 }
