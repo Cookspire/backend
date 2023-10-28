@@ -107,9 +107,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO fetchUser(@Valid Long userId) {
+    public UserDTO fetchUser(@Valid String email) {
 
-        Optional<Users> chkUser = userRepo.findById(userId);
+        Optional<Users> chkUser = userRepo.findByEmail(email);
 
         if (chkUser.isPresent()) {
             Users userEntity = chkUser.get();

@@ -13,7 +13,7 @@ public interface UserService {
 
     public UserDTO persistUser(UserDTO request);
 
-    public UserDTO fetchUser(@Valid Long userId);
+    public UserDTO fetchUser(@Valid String email);
 
     public ResponseDTO deleteUser(@Valid Long userId);
 

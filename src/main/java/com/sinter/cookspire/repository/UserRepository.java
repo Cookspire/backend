@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Optional<Users> findByEmailAndPassword(String email, String password);
 
-    @Query(nativeQuery = true, value = "select * from users where user_id=:fromUser or user_id=:toUser")
+    @Query(nativeQuery = true, value = "select * from users where id=:fromUser or id=:toUser")
     List<Users> findUsers(@Param("fromUser") long fromUser, @Param("toUser") long toUser);
 
 }

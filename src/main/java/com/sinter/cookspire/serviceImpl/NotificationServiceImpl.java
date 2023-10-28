@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.NotficationRequestDTO;
@@ -30,9 +29,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     MessageSource msgSrc;
-
-    @Autowired
-    private SimpMessagingTemplate messagingTemplate;
 
     Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
@@ -54,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (chkusers.size() < 2) {
             logger.error("Incorrect User Id");
             logger.info("Exiting from persist Notification logic");
-            throw new ApplicationException(msgSrc.getMessage("User.NOT_FOUND", null, Locale.ENGLISH),
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
 

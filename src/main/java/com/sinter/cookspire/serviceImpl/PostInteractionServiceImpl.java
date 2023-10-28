@@ -1,6 +1,7 @@
 package com.sinter.cookspire.serviceImpl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.sinter.cookspire.dto.NotficationRequestDTO;
 import com.sinter.cookspire.dto.PostInteractionDTO;
 import com.sinter.cookspire.entity.Post;
 import com.sinter.cookspire.entity.PostInteraction;
@@ -20,6 +22,7 @@ import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.repository.PostInteractionRepository;
 import com.sinter.cookspire.repository.PostRepository;
 import com.sinter.cookspire.repository.UserRepository;
+import com.sinter.cookspire.service.NotificationService;
 import com.sinter.cookspire.service.PostInteractionService;
 
 @Service
@@ -40,6 +43,9 @@ public class PostInteractionServiceImpl implements PostInteractionService {
     @Autowired
     PostInteractionRepository postInteractionRepo;
 
+    @Autowired
+    NotificationService notficationService;
+
     Logger logger = LoggerFactory.getLogger(PostInteractionServiceImpl.class);
 
     @Override
@@ -59,7 +65,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
             }
         }
 
-        PostInteraction postEntity = new PostInteraction();
+        PostInteraction postInteractionEntity = new PostInteraction();
 
         Optional<Users> chkUser = userRepo.findById(request.getCreatedBy());
         if (chkUser.isEmpty()) {
@@ -69,7 +75,7 @@ public class PostInteractionServiceImpl implements PostInteractionService {
                     Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         } else
-            postEntity.setUsers(chkUser.get());
+            postInteractionEntity.setUsers(chkUser.get());
 
         Optional<Post> chkPost = postRepo.findById(request.getPostId());
         if (chkPost.isEmpty()) {
@@ -78,13 +84,13 @@ public class PostInteractionServiceImpl implements PostInteractionService {
             throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         } else
-            postEntity.setPosts(chkPost.get());
+            postInteractionEntity.setPosts(chkPost.get());
 
         if (request.getId() != 0 && chkInteraction.isPresent()) {
-            postEntity.setCreatedOn(chkInteraction.get().getCreatedOn());
-            postEntity.setId(chkInteraction.get().getId());
+            postInteractionEntity.setCreatedOn(chkInteraction.get().getCreatedOn());
+            postInteractionEntity.setId(chkInteraction.get().getId());
         } else if (request.getId() == 0) {
-            postEntity.setCreatedOn(LocalDateTime.now());
+            postInteractionEntity.setCreatedOn(LocalDateTime.now());
         } else {
             logger.error("Error occured while persisting post interaction.");
             logger.info("Exit from persisting post interaction.");
@@ -92,24 +98,36 @@ public class PostInteractionServiceImpl implements PostInteractionService {
                     HttpStatus.BAD_REQUEST);
         }
 
-        postEntity.setUpdatedOn(LocalDateTime.now());
+        postInteractionEntity.setUpdatedOn(LocalDateTime.now());
 
         if (request.isLiked()) {
-            postEntity.setLikes(true);
-            postEntity.setDislikes(false);
+            postInteractionEntity.setLikes(true);
+            postInteractionEntity.setDislikes(false);
         } else {
-            postEntity.setLikes(false);
-            postEntity.setDislikes(true);
+            postInteractionEntity.setLikes(false);
+            postInteractionEntity.setDislikes(true);
         }
 
-        long postInteractionId = postInteractionRepo.save(postEntity).getId();
+        long postInteractionId = postInteractionRepo.save(postInteractionEntity).getId();
+
+        // Add Async
+        notficationService.persistNotification(
+                new NotficationRequestDTO(0, request.getCreatedBy(), chkPost.get().getUsers().getId(), LocalDateTime.now(),
+                        LocalDateTime.now(), msgSrc.getMessage("Notification.Like_MESSAGE", null, Locale.ENGLISH),
+                        false));
+
+        logger.info("Sending WEB SOCKET Message");
+
+        List<NotficationRequestDTO> messages = notficationService.fetchAllNotification(postInteractionEntity.getUsers().getId());
+        messagingTemplate.convertAndSendToUser(postInteractionEntity.getUsers().getEmail(), "/notification/postInteraction",
+                messages);
+
+        logger.info("Sent WEB SOCKET Message");
 
         logger.info("Exit from persisting post interaction.");
 
-        // Add Async
-
-        return new PostInteractionDTO(postInteractionId, 0L, postEntity.getPosts().getId(),
-                request.isLiked(), postEntity.getCreatedOn(), postEntity.getUpdatedOn());
+        return new PostInteractionDTO(postInteractionId, 0L, postInteractionEntity.getPosts().getId(),
+                request.isLiked(), postInteractionEntity.getCreatedOn(), postInteractionEntity.getUpdatedOn());
     }
 
 }
