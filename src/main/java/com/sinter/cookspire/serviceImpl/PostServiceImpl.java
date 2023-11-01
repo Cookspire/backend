@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.PostDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
+import com.sinter.cookspire.dto.UserDTO;
+import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Post;
 import com.sinter.cookspire.entity.PostInteraction;
 import com.sinter.cookspire.entity.Users;
 import com.sinter.cookspire.exception.ApplicationException;
+import com.sinter.cookspire.repository.FollowerRepository;
 import com.sinter.cookspire.repository.PostInteractionRepository;
 import com.sinter.cookspire.repository.PostRepository;
 import com.sinter.cookspire.repository.UserRepository;
@@ -34,6 +38,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     UserRepository userRepo;
+
+    @Autowired
+    FollowerRepository followerRepo;
 
     @Autowired
     MessageSource msgSrc;
@@ -95,7 +102,13 @@ public class PostServiceImpl implements PostService {
 
         long postId = postRepo.save(postEntity).getId();
         logger.info("Exit from persisting post.");
-        return new PostDTO(postId, request.getContent(), request.getCreatedBy(), like,
+        return new PostDTO(postId, request.getContent(),
+                new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                        postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
+                        postEntity.getUsers().getCountry(),
+                        postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
+                        postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
+                like,
                 dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn());
     }
 
@@ -116,7 +129,12 @@ public class PostServiceImpl implements PostService {
                 hasLiked = chkLike.get().isLikes();
                 hasDisliked = chkLike.get().isDislikes();
             }
-            return new PostDTO(postId, postEntity.getContent(), postEntity.getUsers().getId(),
+            return new PostDTO(postId, postEntity.getContent(),
+                    new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                            postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
+                            postEntity.getUsers().getCountry(),
+                            postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
+                            postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
                     like,
                     dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn());
         }
@@ -134,7 +152,7 @@ public class PostServiceImpl implements PostService {
         List<PostDTO> response = new ArrayList<PostDTO>();
         Optional<Users> chkUser = userRepo.findById(userId);
         if (chkUser.isPresent()) {
-            List<Post> postEntries = postRepo.findAllByUsers(chkUser.get());
+            List<Post> postEntries = postRepo.findAllByUsersOrderByUpdatedOnDesc(chkUser.get());
 
             for (var postEntity : postEntries) {
                 long like = postInteractionRepo.fetchLikes(postEntity.getId());
@@ -150,7 +168,12 @@ public class PostServiceImpl implements PostService {
 
                 }
 
-                response.add(new PostDTO(postEntity.getId(), postEntity.getContent(), postEntity.getUsers().getId(),
+                response.add(new PostDTO(postEntity.getId(), postEntity.getContent(),
+                        new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                                postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
+                                postEntity.getUsers().getCountry(),
+                                postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
+                                postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
                         like,
                         dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn()));
 
@@ -178,6 +201,75 @@ public class PostServiceImpl implements PostService {
             throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
+    }
+
+    @Override
+    public List<PostDTO> fetchAllFollowersPost(Long userId) {
+
+        Optional<Users> chkUser = userRepo.findById(userId);
+
+        List<PostDTO> response = new ArrayList<PostDTO>();
+
+        if (chkUser.isPresent()) {
+            List<Follower> followers = followerRepo.findAllByFolloweeUsers(chkUser.get());
+
+            for (var followerEntity : followers) {
+                response.addAll(fetchAllPost(followerEntity.getId()));
+            }
+
+            response = response.stream().sorted((ob1, ob2) -> ob2.getUpdatedOn().compareTo(ob1.getUpdatedOn()))
+                    .collect(Collectors.toList());
+            return response;
+
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from fetcing all followers posts.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public List<PostDTO> fetchAllTrendingPost(Long userId) {
+
+        List<PostDTO> response = new ArrayList<PostDTO>();
+
+        List<Users> verifiedUsers = userRepo.findAllByIsVerifiedTrue();
+
+        for (var userEntity : verifiedUsers) {
+
+            List<Post> posts = postRepo.findAllByUsers(userEntity);
+
+            for (var postEntity : posts) {
+                long like = postInteractionRepo.fetchLikes(postEntity.getId());
+                long dislike = postInteractionRepo.fetchDislikes(postEntity.getId());
+
+                boolean hasLiked = false;
+                boolean hasDisliked = false;
+                if (userId > 0) {
+                    Optional<Users> chkUser = userRepo.findById(userId);
+                    Optional<PostInteraction> chkLike = postInteractionRepo.findByUsers(chkUser.get());
+                    if (chkLike.isPresent()) {
+
+                        hasLiked = chkLike.get().isLikes();
+                        hasDisliked = chkLike.get().isDislikes();
+
+                    }
+                }
+                response.add(new PostDTO(postEntity.getId(), postEntity.getContent(),
+                        new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                                postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
+                                postEntity.getUsers().getCountry(),
+                                postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
+                                postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
+                        like,
+                        dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn()));
+            }
+
+        }
+
+        return response;
+
     }
 
 }
