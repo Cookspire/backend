@@ -53,7 +53,7 @@ public class PostController {
         return new ResponseEntity<>(postService.fetchAllPost(userId), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetchAll/posts/user/follower", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/fetchAll/post/user/follower", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetcAllFollowersPost(@PathParam(value = "userId") @Valid Long userId) {
         logger.info("Entering fetchAll followers post logic");
         return new ResponseEntity<>(postService.fetchAllFollowersPost(userId), HttpStatus.OK);

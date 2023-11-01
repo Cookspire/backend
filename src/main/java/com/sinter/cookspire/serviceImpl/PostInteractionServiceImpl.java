@@ -1,7 +1,6 @@
 package com.sinter.cookspire.serviceImpl;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import com.sinter.cookspire.dto.NotficationRequestDTO;
 import com.sinter.cookspire.dto.PostInteractionDTO;
 import com.sinter.cookspire.entity.Post;
 import com.sinter.cookspire.entity.PostInteraction;
@@ -53,19 +51,21 @@ public class PostInteractionServiceImpl implements PostInteractionService {
 
         Optional<PostInteraction> chkInteraction = postInteractionRepo.findById(request.getId());
 
+        PostInteraction postInteractionEntity = new PostInteraction();
+
         if (request.getId() == 0) {
-            Optional<PostInteraction> chkUser = postInteractionRepo.findByUserAndPost(request.getCreatedBy(),
+            Optional<PostInteraction> chkUserDuplicate = postInteractionRepo.findByUserAndPost(request.getCreatedBy(),
                     request.getPostId());
-            if (chkUser.isPresent()) {
+            if (chkUserDuplicate.isPresent() && chkUserDuplicate.get().isLikes() && request.isLiked()) {
                 logger.error("Error occured while persisting post interaction.");
                 logger.info("Exit from persisting post interaction.");
                 throw new ApplicationException(msgSrc.getMessage("Post.Intr.Duplicate", null,
                         Locale.ENGLISH),
                         HttpStatus.NOT_FOUND);
+            } else if (chkUserDuplicate.isPresent()) {
+                postInteractionEntity.setId(chkUserDuplicate.get().getId());
             }
         }
-
-        PostInteraction postInteractionEntity = new PostInteraction();
 
         Optional<Users> chkUser = userRepo.findById(request.getCreatedBy());
         if (chkUser.isEmpty()) {
@@ -110,21 +110,29 @@ public class PostInteractionServiceImpl implements PostInteractionService {
 
         long postInteractionId = postInteractionRepo.save(postInteractionEntity).getId();
 
-        // Add Async
-        notficationService.persistNotification(
-                new NotficationRequestDTO(0, request.getCreatedBy(), chkPost.get().getUsers().getId(), LocalDateTime.now(),
-                        LocalDateTime.now(), msgSrc.getMessage("Notification.Like_MESSAGE", null, Locale.ENGLISH),
-                        false));
+        // Async web socket logic ---------------------------
 
-        logger.info("Sending WEB SOCKET Message");
-
-        List<NotficationRequestDTO> messages = notficationService.fetchAllNotification(postInteractionEntity.getUsers().getId());
-        messagingTemplate.convertAndSendToUser(postInteractionEntity.getUsers().getEmail(), "/notification/postInteraction",
-                messages);
-
-        logger.info("Sent WEB SOCKET Message");
-
-        logger.info("Exit from persisting post interaction.");
+        /*
+         * notficationService.persistNotification(
+         * new NotficationRequestDTO(0, request.getCreatedBy(),
+         * chkPost.get().getUsers().getId(), LocalDateTime.now(),
+         * LocalDateTime.now(), msgSrc.getMessage("Notification.Like_MESSAGE", null,
+         * Locale.ENGLISH),
+         * false));
+         * 
+         * logger.info("Sending WEB SOCKET Message");
+         * 
+         * List<NotficationRequestDTO> messages =
+         * notficationService.fetchAllNotification(postInteractionEntity.getUsers().
+         * getId());
+         * messagingTemplate.convertAndSendToUser(postInteractionEntity.getUsers().
+         * getEmail(), "/notification/postInteraction",
+         * messages);
+         * 
+         * logger.info("Sent WEB SOCKET Message");
+         * 
+         * logger.info("Exit from persisting post interaction.");
+         */
 
         return new PostInteractionDTO(postInteractionId, 0L, postInteractionEntity.getPosts().getId(),
                 request.isLiked(), postInteractionEntity.getCreatedOn(), postInteractionEntity.getUpdatedOn());

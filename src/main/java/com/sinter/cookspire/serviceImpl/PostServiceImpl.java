@@ -160,7 +160,7 @@ public class PostServiceImpl implements PostService {
 
                 boolean hasLiked = false;
                 boolean hasDisliked = false;
-                Optional<PostInteraction> chkLike = postInteractionRepo.findByUsers(chkUser.get());
+                Optional<PostInteraction> chkLike = postInteractionRepo.findByUsersAndPosts(chkUser.get(), postEntity);
                 if (chkLike.isPresent()) {
 
                     hasLiked = chkLike.get().isLikes();
@@ -217,6 +217,8 @@ public class PostServiceImpl implements PostService {
                 response.addAll(fetchAllPost(followerEntity.getId()));
             }
 
+            response.addAll(fetchAllPost(userId));
+
             response = response.stream().sorted((ob1, ob2) -> ob2.getUpdatedOn().compareTo(ob1.getUpdatedOn()))
                     .collect(Collectors.toList());
             return response;
@@ -248,7 +250,8 @@ public class PostServiceImpl implements PostService {
                 boolean hasDisliked = false;
                 if (userId > 0) {
                     Optional<Users> chkUser = userRepo.findById(userId);
-                    Optional<PostInteraction> chkLike = postInteractionRepo.findByUsers(chkUser.get());
+                    Optional<PostInteraction> chkLike = postInteractionRepo.findByUsersAndPosts(chkUser.get(),
+                            postEntity);
                     if (chkLike.isPresent()) {
 
                         hasLiked = chkLike.get().isLikes();

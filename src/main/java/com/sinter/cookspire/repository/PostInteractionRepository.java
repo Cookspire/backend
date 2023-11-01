@@ -31,4 +31,6 @@ public interface PostInteractionRepository extends JpaRepository<PostInteraction
 
     List<PostInteraction> findAll();
 
+    Optional<PostInteraction> findByUsersAndPosts(Users users, Post postEntity);
+
 }
