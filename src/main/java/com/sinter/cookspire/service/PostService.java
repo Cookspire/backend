@@ -15,6 +15,10 @@ public interface PostService {
 
     List<PostDTO> fetchAllPost(@Valid Long userId);
 
+    List<PostDTO> fetchAllFollowersPost(Long userId);
+
     ResponseDTO deletePost(@Valid Long postId);
+
+     List<PostDTO> fetchAllTrendingPost(Long userId);
 
 }

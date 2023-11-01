@@ -20,4 +20,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query(nativeQuery = true, value = "select * from users where id=:fromUser or id=:toUser")
     List<Users> findUsers(@Param("fromUser") long fromUser, @Param("toUser") long toUser);
 
+    List<Users> findAllByIsVerifiedTrue();
+
 }

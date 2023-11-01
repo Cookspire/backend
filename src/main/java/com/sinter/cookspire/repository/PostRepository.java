@@ -13,5 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByUsers(Users users);
 
-    
+    List<Post> findAllByUsersOrderByUpdatedOnDesc(Users users);
+
 }
