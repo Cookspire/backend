@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sinter.cookspire.dto.PostDTO;
@@ -50,6 +51,20 @@ public class PostController {
     public ResponseEntity<?> fetcAllPost(@PathParam(value = "userId") @Valid Long userId) {
         logger.info("Entering fetchAll post logic");
         return new ResponseEntity<>(postService.fetchAllPost(userId), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetchAll/post/user/follower", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetcAllFollowersPost(@PathParam(value = "userId") @Valid Long userId) {
+        logger.info("Entering fetchAll followers post logic");
+        return new ResponseEntity<>(postService.fetchAllFollowersPost(userId), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetchAll/trending/post", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchAllTrendingPost(
+            @RequestParam(value = "userId", required = false) Long userId) {
+        logger.info("Entering fetchAll trending post logic");
+      
+        return new ResponseEntity<>(postService.fetchAllTrendingPost(userId), HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/delete/post", produces = MediaType.APPLICATION_JSON_VALUE)

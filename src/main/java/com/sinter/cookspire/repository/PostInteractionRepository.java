@@ -1,5 +1,6 @@
 package com.sinter.cookspire.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,5 +28,9 @@ public interface PostInteractionRepository extends JpaRepository<PostInteraction
             @Param(value = "postId") long postId);
 
     Optional<PostInteraction> findByUsers(Users users);
+
+    List<PostInteraction> findAll();
+
+    Optional<PostInteraction> findByUsersAndPosts(Users users, Post postEntity);
 
 }

@@ -3,11 +3,11 @@ package com.sinter.cookspire.dto;
 import java.time.LocalDateTime;
 
 import io.micrometer.common.lang.Nullable;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class PostDTO {
 
     @Nullable
@@ -16,6 +16,8 @@ public class PostDTO {
     private String content;
 
     private long createdBy;
+
+    private UserDTO createdUser;
 
     @Nullable
     private long likes;
@@ -33,4 +35,19 @@ public class PostDTO {
     @Nullable
     private LocalDateTime updatedOn;
 
+    public PostDTO(long id, String content, UserDTO createdUser, long likes, long dislikes, boolean hasLiked,
+            boolean hasDisliked, LocalDateTime createdOn, LocalDateTime updatedOn) {
+        this.id = id;
+        this.content = content;
+        this.createdUser = createdUser;
+        this.likes = likes;
+        this.dislikes = dislikes;
+        this.hasLiked = hasLiked;
+        this.hasDisliked = hasDisliked;
+        this.createdOn = createdOn;
+        this.updatedOn = updatedOn;
+    }
+
+
+    
 }
