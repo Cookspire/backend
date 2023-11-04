@@ -211,10 +211,10 @@ public class PostServiceImpl implements PostService {
         List<PostDTO> response = new ArrayList<PostDTO>();
 
         if (chkUser.isPresent()) {
-            List<Follower> followers = followerRepo.findAllByFolloweeUsers(chkUser.get());
+            List<Follower> following = followerRepo.findAllByFolloweeUsers(chkUser.get());
 
-            for (var followerEntity : followers) {
-                response.addAll(fetchAllPost(followerEntity.getId()));
+            for (var followerEntity : following) {
+                response.addAll(fetchAllPost(followerEntity.getFollowerUsers().getId()));
             }
 
             response.addAll(fetchAllPost(userId));

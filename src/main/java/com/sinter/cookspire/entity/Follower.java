@@ -38,4 +38,12 @@ public class Follower {
 
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+
+    @Override
+    public String toString() {
+        return "Follower [id=" + id + ", followerUsers=" + followerUsers + ", followeeUsers=" + followeeUsers
+                + ", createdOn=" + createdOn + ", updatedOn=" + updatedOn + "]";
+    }
+
+    
 }
