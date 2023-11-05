@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -49,7 +48,7 @@ public class Post {
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "posts",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
     private List<Bookmark> bookmarks;
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
