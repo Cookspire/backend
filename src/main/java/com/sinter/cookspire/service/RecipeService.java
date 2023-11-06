@@ -11,10 +11,20 @@ public interface RecipeService {
 
     RecipeDTO persistRecipe(RecipeDTO request);
 
-    RecipeDTO fetchRecipe(@Valid Long postId);
+    RecipeDTO fetchRecipeByPost(@Valid Long postId);
 
     ResponseDTO deleteRecipe(@Valid Long recipeId);
 
-    List<RecipeDTO> fetchAllRecipe();
+    List<RecipeDTO> filterAllRecipe();
+
+    List<String> fetchAllCuisine();
+
+    List<RecipeDTO> fetchRecipesByCuisine(String cuisine);
+
+    List<String> fetchAllCourse();
+
+    List<RecipeDTO> fetchRecipesByCourse(String course);
+
+    public RecipeDTO fetchRecipe(long recipeId);
     
 }

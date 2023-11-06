@@ -71,7 +71,6 @@ public class Recipe {
     private boolean is_Verified;
 
     @Column(nullable = true, length = 250)
-    @Lob
     private String imageName;
 
     @Column(nullable = true, length = 50)

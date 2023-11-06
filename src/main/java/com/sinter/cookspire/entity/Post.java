@@ -40,7 +40,6 @@ public class Post {
     private LocalDateTime updatedOn;
 
     @Column(nullable = true, length = 250)
-    @Lob
     private String imageName;
 
     @Column(nullable = true, length = 50)

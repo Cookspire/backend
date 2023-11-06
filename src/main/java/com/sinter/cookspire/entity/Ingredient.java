@@ -25,10 +25,10 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(length = 200, nullable = false)
+    @Column(length = 2000, nullable = false)
     private String item;
 
-    @Column(length = 1000, nullable = false)
+    @Column(length = 2000, nullable = false)
     private String quantity;
 
     private String units;
