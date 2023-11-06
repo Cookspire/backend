@@ -57,17 +57,42 @@ public class RecipeServiceImpl implements RecipeService {
             throw new ApplicationException(msgSrc.getMessage("Recipe.Error", null, Locale.ENGLISH),
                     HttpStatus.BAD_REQUEST);
         }
-        Optional<Post> chkPost = postRepo.findById(request.getPostId());
-        if (chkPost.isEmpty()) {
-            logger.error("Error occured while persisting recipe.");
-            logger.info("Exit from persisting recipe.");
-            throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
-                    HttpStatus.NOT_FOUND);
-        } else
-            recipeEntity.setPost(chkPost.get());
+        if (request.getPostId() != 0) {
+            Optional<Post> chkPost = postRepo.findById(request.getPostId());
+            if (chkPost.isEmpty()) {
+                logger.error("Error occured while persisting recipe.");
+                logger.info("Exit from persisting recipe.");
+                throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
+                        HttpStatus.NOT_FOUND);
+            } else
+                recipeEntity.setPost(chkPost.get());
+        } else {
+            recipeEntity.setPost(null);
+        }
+
+        recipeEntity.set_Verified(request.is_Verified());
+        recipeEntity.setCook_time_mins(request.getCook_time_mins());
+        recipeEntity.setCourse(request.getCourse());
+        recipeEntity.setDescription(request.getDescription());
+        recipeEntity.setCuisine(request.getCuisine());
+        recipeEntity.setDiet(request.getDiet());
+
+        if (request.getImageName() != null) {
+            recipeEntity.setImageName(request.getImageName());
+        }
+
+        if (request.getImageType() != null) {
+            recipeEntity.setImageType(request.getImageType());
+        }
+
+        if (request.getImageData() != null) {
+            recipeEntity.setImageData(request.getImageData());
+        }
+
         recipeEntity.setInstruction(request.getInstructions());
 
         recipeEntity.setName(request.getName());
+        recipeEntity.setPrep_time_mins(request.getPrep_time_mins());
 
         if (request.getDifficulty() == null && chkRecipe.isPresent())
             recipeEntity.setLevel(chkRecipe.get().getLevel());
@@ -79,9 +104,11 @@ public class RecipeServiceImpl implements RecipeService {
         recipeEntity.setUpdatedOn(LocalDateTime.now());
         long recipeId = recipeRepo.save(recipeEntity).getId();
         logger.info("Exit from persisting recipe.");
-        return new RecipeDTO(recipeId, recipeEntity.getInstruction(), recipeEntity.getPost().getId(),
-                recipeEntity.getLevel(), recipeEntity.getName(), recipeEntity.getCreatedOn(),
-                recipeEntity.getUpdatedOn());
+        return new RecipeDTO(recipeId, recipeEntity.getInstruction(), recipeEntity.getName(), recipeEntity.getLevel(),
+                recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
+                recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
+                recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
+                0, recipeEntity.getImageName(), recipeEntity.getImageType(), recipeEntity.getImageData());
     }
 
     @Override
@@ -94,9 +121,13 @@ public class RecipeServiceImpl implements RecipeService {
                 return new RecipeDTO();
             }
             Recipe recipeEntity = chkRecipe.get();
-            return new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getPost().getId(),
-                    recipeEntity.getLevel(), recipeEntity.getName(), recipeEntity.getCreatedOn(),
-                    recipeEntity.getUpdatedOn());
+            return new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
+                    recipeEntity.getLevel(),
+                    recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
+                    recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
+                    recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
+                    recipeEntity.getPost().getId(), recipeEntity.getImageName(), recipeEntity.getImageType(),
+                    recipeEntity.getImageData());
         }
 
         else {

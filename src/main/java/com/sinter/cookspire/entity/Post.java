@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +38,17 @@ public class Post {
 
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+
+    @Column(nullable = true, length = 250)
+    @Lob
+    private String imageName;
+
+    @Column(nullable = true, length = 50)
+    private String imageType;
+
+    @Column(nullable = true)
+    @Lob
+    private byte[] imageData;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "createdBy")

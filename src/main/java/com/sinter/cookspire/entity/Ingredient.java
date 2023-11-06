@@ -28,7 +28,8 @@ public class Ingredient {
     @Column(length = 200, nullable = false)
     private String item;
 
-    private int quantity;
+    @Column(length = 1000, nullable = false)
+    private String quantity;
 
     private String units;
 

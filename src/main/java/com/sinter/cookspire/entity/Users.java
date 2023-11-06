@@ -12,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -50,6 +51,17 @@ public class Users {
 
   @UpdateTimestamp
   private LocalDateTime updatedOn;
+
+  @Column(nullable = true, length = 250)
+  @Lob
+  private String imageName;
+
+  @Column(nullable = true, length = 50)
+  private String imageType;
+
+  @Column(nullable = true)
+  @Lob
+  private byte[] imageData;
 
   @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Post> posts;

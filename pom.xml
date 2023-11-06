@@ -63,6 +63,14 @@
 		</dependency>
 		<!-- -->
 
+		<!-- CSV reader-->
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.7.1</version>
+		</dependency>
+
+
 		<!-- web socket -->
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -1,13 +1,9 @@
 package com.sinter.cookspire.dto;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.sinter.cookspire.utils.Level;
 
-import io.micrometer.common.lang.NonNull;
-import io.micrometer.common.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,25 +13,39 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RecipeDTO {
 
-    @Nullable
     private long id;
 
     private String instructions;
 
-    private long postId;
+    private String name;
 
     private Level difficulty;
 
-    @NonNull
-    private String name;
+    private String description;
 
-    @Nullable
+    private String cuisine;
+
+    private String course;
+
+    private String diet;
+
+    private Integer prep_time_mins;
+
+    private Integer cook_time_mins;
+
     private LocalDateTime createdOn;
 
-    @Nullable
     private LocalDateTime updatedOn;
 
-    public Map<String, String> isEmpty() {
-        return new HashMap<String, String>();
-    }
+    private boolean is_Verified;
+
+    private long postId;
+
+    private String imageName;
+
+    private String imageType;
+
+    private byte[] imageData;
+
+
 }
