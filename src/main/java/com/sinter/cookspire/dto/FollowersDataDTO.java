@@ -7,6 +7,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class FollowersDataDTO {
 
+    private long id;
+    
     private String name;
 
     private boolean isVerified;

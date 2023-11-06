@@ -70,4 +70,10 @@ public class UserController {
         return new ResponseEntity<>(userService.fetchAllFollowers(userId), HttpStatus.OK);
     }
 
+    @PostMapping(value = "/fetch/general/userAnalysis", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchGeneralUserAnalysis(@PathParam(value = "userId") @Valid long userId) {
+        logger.info("Entering fetch all user analysis");
+        return new ResponseEntity<>(userService.fetchGeneralUserAnalysis(userId), HttpStatus.OK);
+    }
+
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.lang.NonNull;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -28,25 +27,19 @@ public class Users {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @NonNull
-  @Column(length = 50)
+  @Column(length = 50, nullable = false)
   private String username;
 
-  @NonNull
   @Column(length = 200)
   private String email;
 
-  @NonNull
   private String salt;
 
-  @NonNull
   private String password;
 
-  @NonNull
   @Column(length = 150)
   private String bio;
 
-  @NonNull
   @Column(length = 70)
   private String country;
 

@@ -2,39 +2,44 @@ package com.sinter.cookspire.dto;
 
 import java.time.LocalDateTime;
 
-import org.springframework.lang.NonNull;
-
 import io.micrometer.common.lang.Nullable;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
 public class UserDTO {
 
     @Nullable
     private long id;
 
-    @NonNull
     private String username;
 
-    @NonNull
     private String email;
 
-    @NonNull
     private String password;
 
-    @NonNull
     private String country;
 
-    @NonNull
     private Boolean isVerified;
 
-    @NonNull
     private String bio;
 
     private LocalDateTime createdOn;
 
     private LocalDateTime updatedOn;
+
+    private String oldPassword;
+
+    public UserDTO(long id, String username, String email, String password, String country, Boolean isVerified,
+            String bio, LocalDateTime createdOn, LocalDateTime updatedOn) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.country = country;
+        this.isVerified = isVerified;
+        this.bio = bio;
+        this.createdOn = createdOn;
+        this.updatedOn = updatedOn;
+    }
 
 }
