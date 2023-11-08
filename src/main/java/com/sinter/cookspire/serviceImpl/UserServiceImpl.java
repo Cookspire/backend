@@ -282,9 +282,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public JWTResponseDTO verifyUser(VerifyUserDTO request) {
 
-        Optional<Users> chkUser = userRepo.findByEmailAndPassword(request.getEmail(), request.getPassword());
+        Optional<Users> chkUser = userRepo.findByEmail(request.getEmail());
 
         if (chkUser.isPresent()) {
+
+            boolean passwordChecker = decryptor.isSame(chkUser.get().getPassword(), request.getPassword(),
+                    chkUser.get().getSalt());
+            if (!passwordChecker) {
+                logger.error("Error Occured while changing user password.");
+                logger.info("Exit from Persisting User.");
+                throw new ApplicationException(msgSrc.getMessage("User.IncorrectPassowrd", null, Locale.ENGLISH),
+                        HttpStatus.BAD_REQUEST);
+            }
+
             String access_token = jwtService.createToken(chkUser.get().getEmail());
             String refresh = refreshTokenService
                     .persistToken(new RefreshTokenDTO(0, UUID.randomUUID().toString(), chkUser.get().getEmail(),
