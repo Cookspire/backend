@@ -112,11 +112,11 @@ public class RecipeController {
             for (String[] record : records) {
                 record[5] = record[5].replaceAll("[^a-zA-Z ]", "");
                 String shortDesc = record[5].substring(0, Math.min(record[5].length(), 150));
-
+                String modified_text=record[7].replaceAll("/^[^ A-Za-z0-9_@./#&+-]*$/","");
                 String prepare_time = record[11].length() > 0 ? record[11] : "0";
                 String cooking_time = record[1].length() > 0 ? record[1] : "0";
                 String name = record[10].replaceAll("[^a-zA-Z ]", "");
-                RecipeDTO recipeDTO = new RecipeDTO(0, record[7], name, Level.UNKNOWN,
+                RecipeDTO recipeDTO = new RecipeDTO(0, modified_text, name, Level.UNKNOWN,
                         shortDesc, record[4], record[2], record[6], Integer.parseInt(prepare_time),
                         Integer.parseInt(cooking_time), LocalDateTime.now(), LocalDateTime.now(), false, 0, record[15],
                         "url", null);
