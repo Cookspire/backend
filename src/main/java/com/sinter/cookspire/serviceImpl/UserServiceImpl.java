@@ -288,6 +288,8 @@ public class UserServiceImpl implements UserService {
 
             boolean passwordChecker = decryptor.isSame(chkUser.get().getPassword(), request.getPassword(),
                     chkUser.get().getSalt());
+
+                    
             if (!passwordChecker) {
                 logger.error("Error Occured while changing user password.");
                 logger.info("Exit from Persisting User.");

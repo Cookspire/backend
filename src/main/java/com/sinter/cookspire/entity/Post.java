@@ -49,7 +49,7 @@ public class Post {
     @Lob
     private byte[] imageData;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "createdBy")
     private Users users;
 
