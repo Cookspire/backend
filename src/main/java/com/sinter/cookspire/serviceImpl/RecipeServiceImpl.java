@@ -176,7 +176,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeDTO> fetchRecipesByCuisine(String cuisine) {
 
-        Pageable pagination= PageRequest.of(0, 20, Sort.by("name").ascending());
+        Pageable pagination= PageRequest.of(1, 20, Sort.by("name").ascending());
 
         List<RecipeDTO> response = new ArrayList<RecipeDTO>();
         List<Recipe> recipesByCuisines = recipeRepo.findByCuisineIgnoreCase(cuisine,pagination);
