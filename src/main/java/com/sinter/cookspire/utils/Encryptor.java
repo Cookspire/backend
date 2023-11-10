@@ -4,11 +4,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import org.springframework.stereotype.Component;
+
 import com.sinter.cookspire.dto.EncryptorDTO;
 
+@Component
 public class Encryptor {
 
-    public static EncryptorDTO encryptor(String text) {
+    public EncryptorDTO encryptor(String text) {
 
         EncryptorDTO response=new EncryptorDTO();
         
