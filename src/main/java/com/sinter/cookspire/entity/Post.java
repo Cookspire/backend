@@ -51,7 +51,7 @@ public class Post {
     @Lob
     private byte[] imageData;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "createdBy")
     private Users users;

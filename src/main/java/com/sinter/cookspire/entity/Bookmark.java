@@ -26,12 +26,10 @@ public class Bookmark {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "post_id")
     private Post posts;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "createdBy")
     private Users users;
 
@@ -40,4 +38,5 @@ public class Bookmark {
 
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+    
 }

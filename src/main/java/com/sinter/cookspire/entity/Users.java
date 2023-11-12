@@ -1,6 +1,7 @@
 package com.sinter.cookspire.entity;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -62,28 +63,29 @@ public class Users {
   @Lob
   private byte[] imageData;
 
-  @OneToMany(mappedBy = "users")
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Post> posts;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Bookmark> bookmarks;
 
-  @OneToMany(mappedBy = "followerUsers", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "followerUsers", cascade = CascadeType.ALL)
   private List<Follower> followers;
 
-  @OneToMany(mappedBy = "followeeUsers", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "followeeUsers", cascade = CascadeType.ALL)
   private List<Follower> followee;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Comment> comments;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Replies> replies;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<RefreshToken> refreshTokens;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<PostInteraction> postInteractions;
+  
 
 }
