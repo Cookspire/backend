@@ -1,9 +1,13 @@
 package com.sinter.cookspire.utils;
 
+import java.util.ArrayList;
+
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -20,6 +24,12 @@ public class ApplicationBeans {
 
         return msgSrc;
 
+    }
+
+    public ApplicationBeans(MappingJackson2HttpMessageConverter convertor){
+         var supportedMediaTypes = new ArrayList<>(convertor.getSupportedMediaTypes());
+        supportedMediaTypes.add(new MediaType("application", "octet-stream"));
+        convertor.setSupportedMediaTypes(supportedMediaTypes);
     }
 
     @Bean
