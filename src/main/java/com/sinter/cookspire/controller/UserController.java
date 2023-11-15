@@ -1,11 +1,13 @@
 package com.sinter.cookspire.controller;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +16,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -25,10 +26,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.ImageUploadDTO;
+import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.service.RefreshTokenService;
 import com.sinter.cookspire.service.UserService;
+import com.sinter.cookspire.utils.ImageSignatureValidator;
 import com.sinter.cookspire.utils.JWTUtils;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -51,6 +54,9 @@ public class UserController {
 
     @Autowired
     MessageSource msgSrc;
+
+    @Autowired
+    ImageSignatureValidator imageSign;
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -75,14 +81,26 @@ public class UserController {
 
         try {
             objectMapper.readValue(request, ImageUploadDTO.class);
+
+            if (imageSign.isValigJpeg(file.getInputStream()) ||
+                    imageSign.isValigPng(file.getInputStream())) {
+
+                System.out.println(file.getOriginalFilename());
+
+            } else
+                return new ResponseEntity<>(new ResponseDTO(msgSrc.getMessage("Format.INVALID", null, Locale.ENGLISH)),
+                        HttpStatus.BAD_REQUEST);
+
         } catch (JsonProcessingException e) {
             throw new ApplicationException(msgSrc.getMessage("ObjectMapper.INVALID", null, Locale.ENGLISH),
                     HttpStatus.BAD_REQUEST);
+        } catch (NoSuchMessageException e) {
+            throw new ApplicationException(msgSrc.getMessage("Format.INVALID", null, Locale.ENGLISH),
+                    HttpStatus.BAD_REQUEST);
+        } catch (IOException e) {
+            throw new ApplicationException(msgSrc.getMessage("Format.INVALID", null, Locale.ENGLISH),
+                    HttpStatus.BAD_REQUEST);
         }
-
-        System.out.println(file.getOriginalFilename());
-        System.out.println(file.getSize());
-        System.out.println(file.getResource());
 
         return null;
     }
