@@ -22,11 +22,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sinter.cookspire.dto.FollowerDTO;
-import com.sinter.cookspire.dto.ImageUploadDTO;
-import com.sinter.cookspire.dto.ResponseDTO;
+import com.sinter.cookspire.dto.ImageRequestDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.service.RefreshTokenService;
@@ -75,34 +72,36 @@ public class UserController {
     @PatchMapping(value = "/upload/profile/picture", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<?> uploadProfilePicture(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("data") String request) {
+            @RequestParam("data") @Valid long id) {
 
-        ObjectMapper objectMapper = new ObjectMapper();
+        logger.info("Entering upload profile picture logic");
 
+        logger.info("Entering vaidate image signature logic");
         try {
-            objectMapper.readValue(request, ImageUploadDTO.class);
+            if ((imageSign.isValigJpeg(file.getInputStream()) ||
+                    imageSign.isValigPng(file.getInputStream()))
+                    && (file.getOriginalFilename() != null && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
+                            ||
+                            file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))) {
 
-            if (imageSign.isValigJpeg(file.getInputStream()) ||
-                    imageSign.isValigPng(file.getInputStream())) {
+                ImageRequestDTO imageDetails = new ImageRequestDTO(file.getContentType(), file.getOriginalFilename(),
+                        file.getBytes(), id);
 
-                System.out.println(file.getOriginalFilename());
+                return new ResponseEntity<>(userService.uploadProfilePicture(imageDetails), HttpStatus.OK);
 
-            } else
-                return new ResponseEntity<>(new ResponseDTO(msgSrc.getMessage("Format.INVALID", null, Locale.ENGLISH)),
+            } else {
+                logger.error("Invalid Signature for profile picture.");
+                logger.error("Exiting from upload profile picture logic.");
+                throw new ApplicationException(msgSrc.getMessage("User.Error", null, Locale.ENGLISH),
                         HttpStatus.BAD_REQUEST);
-
-        } catch (JsonProcessingException e) {
-            throw new ApplicationException(msgSrc.getMessage("ObjectMapper.INVALID", null, Locale.ENGLISH),
-                    HttpStatus.BAD_REQUEST);
-        } catch (NoSuchMessageException e) {
-            throw new ApplicationException(msgSrc.getMessage("Format.INVALID", null, Locale.ENGLISH),
-                    HttpStatus.BAD_REQUEST);
-        } catch (IOException e) {
-            throw new ApplicationException(msgSrc.getMessage("Format.INVALID", null, Locale.ENGLISH),
+            }
+        } catch (NoSuchMessageException | IOException e) {
+            logger.error("Invalid Signature for profile picture.");
+            logger.error("Exiting from upload profile picture logic.");
+            throw new ApplicationException(msgSrc.getMessage("User.Error", null, Locale.ENGLISH),
                     HttpStatus.BAD_REQUEST);
         }
 
-        return null;
     }
 
     @DeleteMapping(value = "/delete/user", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -2,6 +2,7 @@ package com.sinter.cookspire.service;
 
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.FollowerResponseDTO;
+import com.sinter.cookspire.dto.ImageRequestDTO;
 import com.sinter.cookspire.dto.JWTResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
@@ -25,5 +26,7 @@ public interface UserService {
     public JWTResponseDTO verifyUser(VerifyUserDTO request);
 
     public UserGeneralAnalysisDTO fetchGeneralUserAnalysis(@Valid long userId);
+
+    public UserDTO uploadProfilePicture(ImageRequestDTO imageDetails);
 
 }

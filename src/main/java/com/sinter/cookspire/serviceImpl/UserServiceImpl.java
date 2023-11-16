@@ -18,6 +18,7 @@ import com.sinter.cookspire.dto.EncryptorDTO;
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.FollowerResponseDTO;
 import com.sinter.cookspire.dto.FollowersDataDTO;
+import com.sinter.cookspire.dto.ImageRequestDTO;
 import com.sinter.cookspire.dto.JWTResponseDTO;
 import com.sinter.cookspire.dto.RefreshTokenDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
@@ -115,8 +116,7 @@ public class UserServiceImpl implements UserService {
                     EncryptorDTO encryptData = encryptor.encryptor(request.getPassword());
                     userEntity.setPassword(encryptData.getHashText());
                     userEntity.setSalt(encryptData.getSalt());
-                }
-                else {
+                } else {
                     logger.error("Error Occured while changing user password.");
                     logger.info("Exit from Persisting User.");
                     throw new ApplicationException(msgSrc.getMessage("User.IncorrectPassowrd", null, Locale.ENGLISH),
@@ -335,6 +335,29 @@ public class UserServiceImpl implements UserService {
                     HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @Override
+    public UserDTO uploadProfilePicture(ImageRequestDTO imageDetails) {
+        Optional<Users> chkUser = userRepo.findById(imageDetails.getId());
+
+        if (chkUser.isPresent()) {
+            String imageName = imageDetails.getName() == null ? "IMG_" + chkUser.get().getId() : imageDetails.getName();
+            chkUser.get().setImageName(imageName);
+            chkUser.get().setImageType(imageDetails.getType());
+            chkUser.get().setImageData(imageDetails.getImageData());
+
+            userRepo.save(chkUser.get());
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from fetcing all followers.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+        return new UserDTO(chkUser.get().getId(), chkUser.get().getUsername(), chkUser.get().getEmail(),
+                chkUser.get().getCountry(), chkUser.get().isVerified(), chkUser.get().getBio(),
+                chkUser.get().getCreatedOn(), chkUser.get().getUpdatedOn(), chkUser.get().getImageName(),
+                chkUser.get().getImageType(), chkUser.get().getImageData());
     }
 
 }
