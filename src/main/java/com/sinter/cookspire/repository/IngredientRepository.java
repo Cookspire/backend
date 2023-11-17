@@ -18,4 +18,5 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     @Query(nativeQuery = true, value = "select * from ingredient where item ILIKE %:search% LIMIT 10")
     List<Ingredient> filterIngredient(@Param("search") String search);
 
+
 }
