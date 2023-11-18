@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sinter.cookspire.entity.Ingredient;
 import com.sinter.cookspire.entity.Recipe;
-import com.sinter.cookspire.entity.Users;
+
 @Transactional
 public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     List<Ingredient> findByRecipes(Recipe recipe);
 
-    @Query(nativeQuery = true, value="select * from ingredient where item ILKE '%:search%' LIMIT 10")
-    List<Users> filterIngredient(@Param("search") String search);
+    @Query(nativeQuery = true, value = "select * from ingredient where item ILIKE %:search% LIMIT 10")
+    List<Ingredient> filterIngredient(@Param("search") String search);
 
 }

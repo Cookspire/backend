@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sinter.cookspire.entity.Post;
 import com.sinter.cookspire.entity.Recipe;
-import com.sinter.cookspire.entity.Users;
 
 @Transactional
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
@@ -28,6 +27,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     List<Recipe> findByCourseIgnoreCase(String course, Pageable pagination);
 
-    @Query(nativeQuery = true, value="select * from recipe where name ILKE '%:search%' LIMIT 10")
-    List<Users> filterRecipe(@Param("search") String search);
+    @Query(nativeQuery = true, value="select * from recipe where name ILIKE %:search% LIMIT 10")
+    List<Recipe> filterRecipe(@Param("search") String search);
 }
