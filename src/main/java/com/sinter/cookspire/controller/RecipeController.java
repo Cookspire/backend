@@ -49,7 +49,7 @@ public class RecipeController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PutMapping(value = "/persist/recipe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody RecipeDTO request) {
+    public ResponseEntity<?> persistRecipe(@RequestBody RecipeDTO request) {
         logger.info("Entering persist recipe logic");
         return new ResponseEntity<>(recipeService.persistRecipe(request), HttpStatus.OK);
     }

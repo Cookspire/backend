@@ -31,7 +31,7 @@ public class PostInteractionController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PatchMapping(value = "/persist/interaction", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody PostInteractionDTO request) {
+    public ResponseEntity<?> persistInteraction(@RequestBody PostInteractionDTO request) {
         logger.info("Entering persist post interaction logic");
         return new ResponseEntity<>(postInteractionService.persistInteraction(request), HttpStatus.OK);
     }

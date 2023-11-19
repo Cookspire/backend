@@ -34,7 +34,7 @@ public class CommentController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PutMapping(value = "/persist/comment", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody CommentDTO request) {
+    public ResponseEntity<?> persistComment(@RequestBody CommentDTO request) {
         logger.info("Entering persist comment logic");
         return new ResponseEntity<>(commentService.persistComment(request), HttpStatus.OK);
     }

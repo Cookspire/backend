@@ -34,7 +34,7 @@ public class BookmarkController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PutMapping(value = "/persist/bookmark", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody BookmarkDTO request) {
+    public ResponseEntity<?> persistBookmark(@RequestBody BookmarkDTO request) {
         logger.info("Entering persist bookmark logic");
         return new ResponseEntity<>(bookmarkService.persistBookmark(request), HttpStatus.OK);
     }
