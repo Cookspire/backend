@@ -46,17 +46,10 @@ public class PostController {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    @PutMapping(value = "/persist/post", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistpOST(@RequestBody PostDTO request) {
-        logger.info("Entering persist post logic");
-        return new ResponseEntity<>(postService.persistPost(request), HttpStatus.OK);
-    }
-
-    @PutMapping(value = "/persist/posts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestPart(value = "data") @Valid PostDTO request,
+    @PutMapping(value = "/persist/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> persistPost(@RequestPart(value = "data") @Valid PostDTO request,
             @RequestPart(value = "file", required = false) MultipartFile file) {
-        
-    
+
         if (null != file) {
             try {
                 logger.info("Entering persist post with image logic");
