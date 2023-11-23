@@ -35,6 +35,7 @@ public class Recipe {
     private long id;
 
     @Lob
+    @Column(length = 3000)
     private String instruction;
 
     @NonNull
@@ -42,13 +43,42 @@ public class Recipe {
     private String name;
 
     @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
     private Level level;
+
+    @Column(length = 300)
+    private String description;
+
+    @Column(length = 100)
+    private String cuisine;
+
+    @Column(length = 100)
+    private String course;
+
+    @Column(length = 300)
+    private String diet;
+
+    private Integer prep_time_mins;
+
+    private Integer cook_time_mins;
 
     @CreationTimestamp
     private LocalDateTime createdOn;
 
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+
+    private boolean is_Verified;
+
+    @Column(nullable = true, length = 250)
+    private String imageName;
+
+    @Column(nullable = true, length = 50)
+    private String imageType;
+
+    @Column(nullable = true)
+    @Lob
+    private byte[] imageData;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = true)

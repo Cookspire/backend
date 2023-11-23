@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.lang.NonNull;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -28,25 +28,19 @@ public class Users {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @NonNull
-  @Column(length = 50)
+  @Column(length = 50, nullable = false)
   private String username;
 
-  @NonNull
   @Column(length = 200)
   private String email;
 
-  @NonNull
   private String salt;
 
-  @NonNull
   private String password;
 
-  @NonNull
   @Column(length = 150)
   private String bio;
 
-  @NonNull
   @Column(length = 70)
   private String country;
 
@@ -57,6 +51,16 @@ public class Users {
 
   @UpdateTimestamp
   private LocalDateTime updatedOn;
+
+  @Column(nullable = true, length = 250)
+  private String imageName;
+
+  @Column(nullable = true, length = 50)
+  private String imageType;
+
+  @Column(nullable = true)
+  @Lob
+  private byte[] imageData;
 
   @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
   private List<Post> posts;

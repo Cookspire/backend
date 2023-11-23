@@ -1,5 +1,11 @@
 package com.sinter.cookspire.controller;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +15,25 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvException;
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.entity.Recipe;
+import com.sinter.cookspire.repository.RecipeRepository;
 import com.sinter.cookspire.service.RecipeService;
+import com.sinter.cookspire.utils.Level;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
+
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @CrossOrigin("*")
@@ -31,6 +45,9 @@ public class RecipeController {
     @Autowired
     MessageSource msgSrc;
 
+    @Autowired
+    RecipeRepository recipeRepo;
+
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PutMapping(value = "/persist/recipe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -39,16 +56,75 @@ public class RecipeController {
         return new ResponseEntity<>(recipeService.persistRecipe(request), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetch/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchRecipe(@PathParam(value = "postId") @Valid Long postId) {
+    @PostMapping(value = "/fetch/recipe/post", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchRecipe(@PathParam(value = "id") @Valid Long postId) {
         logger.info("Entering fetch recipe logic");
-        return new ResponseEntity<>(recipeService.fetchRecipe(postId), HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.fetchRecipeByPost(postId), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetchAll/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetcAllRecipe() {
-        logger.info("Entering fetchAll recipe logic");
-        return new ResponseEntity<>(recipeService.fetchAllRecipe(), HttpStatus.OK);
+    // @PostMapping(value = "/fetchAll/recipe", produces =
+    // MediaType.APPLICATION_JSON_VALUE)
+    // public ResponseEntity<?> fetchAllRecipe() {
+    // logger.info("Entering fetchAll recipe logic");
+    // return new ResponseEntity<>(recipeService.fetchAllRecipe(), HttpStatus.OK);
+    // }
+
+    @PostMapping(value = "/fetchAll/cuisine", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchAllCuisine() {
+        logger.info("Entering fetch all cuisine logic");
+        return new ResponseEntity<>(recipeService.fetchAllCuisine(), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetchAll/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchAllCourse() {
+        logger.info("Entering fetch all course logic");
+        return new ResponseEntity<>(recipeService.fetchAllCourse(), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetch/recipe/course", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchRecipeByCourse(@RequestParam(value = "name") String course) {
+        logger.info("Entering fetch recipes by course logic");
+        return new ResponseEntity<>(recipeService.fetchRecipesByCourse(course), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetch/recipe/cuisine", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchRecipeByCuisine(@RequestParam(value = "name") String cuisine) {
+        logger.info("Entering fetch recipes by cuisine logic");
+        return new ResponseEntity<>(recipeService.fetchRecipesByCuisine(cuisine), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetch/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchRecipe(@PathParam(value = "id") long recipeId) {
+        logger.info("Entering fetch recipe logic");
+        return new ResponseEntity<>(recipeService.fetchRecipe(recipeId), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/load/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> LoadAllRecipe() {
+        logger.info("Entering loading recipe logic");
+
+        String csvFile = "D:\\WebDevProjects\\TUD_Projects\\WEB-9810_Projects\\LabWork\\dataset\\test_dataset\\tt.csv";
+
+        try (CSVReader csvReader = new CSVReader(new FileReader(csvFile))) {
+            List<String[]> records = csvReader.readAll();
+            long i=1;
+            for (String[] record : records) {
+                String modified_text=record[0].replaceAll("/^[^ A-Za-z0-9_@./#&+-]*$/","");
+                if(!modified_text.matches("/^[A-Za-z0-9]$/")){
+                    modified_text="";
+                }
+                Optional<Recipe> chkRecipe= recipeRepo.findById(i);
+                chkRecipe.get().setInstruction(modified_text);
+                recipeRepo.save(chkRecipe.get());
+                i++;
+                System.out.println(i);
+            }
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return new ResponseEntity<>("Load Success!", HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/delete/recipe", produces = MediaType.APPLICATION_JSON_VALUE)

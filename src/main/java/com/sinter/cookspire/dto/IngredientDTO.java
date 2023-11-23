@@ -14,7 +14,7 @@ public class IngredientDTO {
 
     private String item;
 
-    private int quantity;
+    private String quantity;
 
     private String units;
 

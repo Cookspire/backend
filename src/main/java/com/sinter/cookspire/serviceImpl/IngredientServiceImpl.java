@@ -78,7 +78,7 @@ public class IngredientServiceImpl implements IngredientService {
             else
                 ingredientEntity.setItem(ingredient.getItem());
 
-            if (ingredient.getQuantity() == 0 && chkIngredient.isPresent())
+            if (ingredient.getQuantity() == null && chkIngredient.isPresent())
                 ingredientEntity.setQuantity(chkIngredient.get().getQuantity());
             else
                 ingredientEntity.setQuantity(ingredient.getQuantity());

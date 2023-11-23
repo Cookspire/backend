@@ -16,32 +16,33 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Autowired
-    JwtFilter jwtFilter;
+        @Autowired
+        JwtFilter jwtFilter;
 
-    @Value("${current.profile}")
-    String profile;
+        @Value("${current.profile}")
+        String profile;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        System.out.println(profile);
-        if (profile.equalsIgnoreCase("dev")) {
-            System.out.println("in here!!");
-            http.csrf((csrf) -> csrf.disable()).authorizeHttpRequests((requests) -> requests
-                    .requestMatchers("/verify/user/**", "/refresh/token", "/docs/**", "/swagger-ui/**",
-                            "v3/api-docs/**")
-                    .permitAll()
-                    .anyRequest().permitAll());
-        } else {
-            http.csrf((csrf) -> csrf.disable()).authorizeHttpRequests((requests) -> requests
-                    .requestMatchers("/verify/user/**", "/refresh/token", "/docs/**", "/swagger-ui/**",
-                            "v3/api-docs/**")
-                    .permitAll()
-                    .anyRequest().authenticated()).sessionManagement(
-                            (sessionManage) -> sessionManage.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                System.out.println(profile);
+                if (profile.equalsIgnoreCase("dev")) {
+                        System.out.println("in here!!");
+                        http.csrf((csrf) -> csrf.disable()).authorizeHttpRequests((requests) -> requests
+                                        .requestMatchers("*")
+                                        .permitAll()
+                                        .anyRequest().permitAll());
+                } else {
+                        http.csrf((csrf) -> csrf.disable()).authorizeHttpRequests((requests) -> requests
+                                        .requestMatchers("/verify/user/**", "/persist/user", "/fetchAll/trending/post/**","/refresh/token", "/docs/**",
+                                                        "/swagger-ui/**",
+                                                        "v3/api-docs/**")
+                                        .permitAll()
+                                        .anyRequest().authenticated()).sessionManagement(
+                                                        (sessionManage) -> sessionManage.sessionCreationPolicy(
+                                                                        SessionCreationPolicy.STATELESS))
+                                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                }
+                return http.build();
         }
-        return http.build();
-    }
 
 }

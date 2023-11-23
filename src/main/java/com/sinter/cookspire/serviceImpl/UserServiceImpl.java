@@ -21,11 +21,13 @@ import com.sinter.cookspire.dto.JWTResponseDTO;
 import com.sinter.cookspire.dto.RefreshTokenDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
+import com.sinter.cookspire.dto.UserGeneralAnalysisDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
 import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Users;
 import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.repository.FollowerRepository;
+import com.sinter.cookspire.repository.PostRepository;
 import com.sinter.cookspire.repository.UserRepository;
 import com.sinter.cookspire.service.RefreshTokenService;
 import com.sinter.cookspire.service.UserService;
@@ -38,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepo;
+
+    @Autowired
+    PostRepository postRepo;
 
     @Autowired
     FollowerRepository followerRepo;
@@ -63,7 +68,9 @@ public class UserServiceImpl implements UserService {
         if (request.getId() != 0 && chkUser.isPresent()) {
             userEntity.setCreatedOn(chkUser.get().getCreatedOn());
             userEntity.setId(chkUser.get().getId());
-            if (chkUser.get().getEmail() != request.getEmail()) {
+            System.out.println(chkUser.get().getEmail());
+            System.out.println(request.getEmail());
+            if (!chkUser.get().getEmail().equals(request.getEmail())) {
                 Optional<Users> chkEmail = userRepo.findByEmail(request.getEmail());
                 if (chkEmail.isPresent()) {
                     logger.error("Error Occured while persisting User Information.");
@@ -91,7 +98,18 @@ public class UserServiceImpl implements UserService {
         userEntity.setBio(request.getBio());
 
         userEntity.setUsername(request.getUsername());
-        userEntity.setPassword(request.getPassword());
+
+        if (request.getOldPassword() != null) {
+            if (chkUser.isPresent() && request.getOldPassword().equals(chkUser.get().getPassword())) {
+                userEntity.setPassword(request.getPassword());
+            } else {
+                logger.error("Error Occured while changing user password.");
+                logger.info("Exit from Persisting User.");
+                throw new ApplicationException(msgSrc.getMessage("User.IncorrectPassowrd", null, Locale.ENGLISH),
+                        HttpStatus.BAD_REQUEST);
+            }
+        } else
+            userEntity.setPassword(request.getPassword());
         userEntity.setEmail(request.getEmail());
         // add hashing here
         userEntity.setSalt("qwueyasduhk12312uqkeqjwe");
@@ -218,13 +236,15 @@ public class UserServiceImpl implements UserService {
             List<Follower> following = followerRepo.findAllByFolloweeUsers(chkUser.get());
 
             for (var followerEntity : followers) {
-                followerList.add(new FollowersDataDTO(followerEntity.getFolloweeUsers().getUsername(),
+                followerList.add(new FollowersDataDTO(followerEntity.getFolloweeUsers().getId(),
+                        followerEntity.getFolloweeUsers().getUsername(),
                         followerEntity.getFolloweeUsers().isVerified()));
             }
             response.setFollowers(followerList);
 
             for (var followeeEntity : following) {
-                followeeList.add(new FollowersDataDTO(followeeEntity.getFollowerUsers().getUsername(),
+                followeeList.add(new FollowersDataDTO(followeeEntity.getFollowerUsers().getId(),
+                        followeeEntity.getFollowerUsers().getUsername(),
                         followeeEntity.getFollowerUsers().isVerified()));
             }
             response.setFollowing(followeeList);
@@ -254,6 +274,31 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.UNAUTHORIZED);
+        }
+
+    }
+
+    @Override
+    public UserGeneralAnalysisDTO fetchGeneralUserAnalysis(@Valid long userId) {
+
+        Optional<Users> chkUser = userRepo.findById(userId);
+
+        UserGeneralAnalysisDTO response = new UserGeneralAnalysisDTO();
+
+        if (chkUser.isPresent()) {
+            response.setFollowerCount(followerRepo.countUserFollowers(userId));
+
+            response.setFollowingCount(followerRepo.countUserFollowing(userId));
+
+            response.setPostCount(postRepo.findAllByUsers(chkUser.get()).size());
+
+            return response;
+
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from fetcing all followers.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
         }
 
     }
