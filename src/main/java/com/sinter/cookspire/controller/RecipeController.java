@@ -62,13 +62,6 @@ public class RecipeController {
         return new ResponseEntity<>(recipeService.fetchRecipeByPost(postId), HttpStatus.OK);
     }
 
-    // @PostMapping(value = "/fetchAll/recipe", produces =
-    // MediaType.APPLICATION_JSON_VALUE)
-    // public ResponseEntity<?> fetchAllRecipe() {
-    // logger.info("Entering fetchAll recipe logic");
-    // return new ResponseEntity<>(recipeService.fetchAllRecipe(), HttpStatus.OK);
-    // }
-
     @PostMapping(value = "/fetchAll/cuisine", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetchAllCuisine() {
         logger.info("Entering fetch all cuisine logic");
