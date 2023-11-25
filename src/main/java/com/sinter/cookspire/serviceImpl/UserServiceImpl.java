@@ -14,6 +14,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.sinter.cookspire.dto.EncryptorDTO;
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.FollowerResponseDTO;
 import com.sinter.cookspire.dto.FollowersDataDTO;
@@ -31,6 +32,8 @@ import com.sinter.cookspire.repository.PostRepository;
 import com.sinter.cookspire.repository.UserRepository;
 import com.sinter.cookspire.service.RefreshTokenService;
 import com.sinter.cookspire.service.UserService;
+import com.sinter.cookspire.utils.Decryptor;
+import com.sinter.cookspire.utils.Encryptor;
 import com.sinter.cookspire.utils.JWTUtils;
 
 import jakarta.validation.Valid;
@@ -52,6 +55,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RefreshTokenService refreshTokenService;
+
+    @Autowired
+    Encryptor encryptor;
+
+    @Autowired
+    Decryptor decryptor;
 
     @Autowired
     JWTUtils jwtService;
@@ -100,19 +109,30 @@ public class UserServiceImpl implements UserService {
         userEntity.setUsername(request.getUsername());
 
         if (request.getOldPassword() != null) {
-            if (chkUser.isPresent() && request.getOldPassword().equals(chkUser.get().getPassword())) {
-                userEntity.setPassword(request.getPassword());
+
+            if (chkUser.isPresent()) {
+                boolean passwordChecker = decryptor.isSame(chkUser.get().getPassword(), request.getOldPassword(),
+                        chkUser.get().getSalt());
+                if (passwordChecker)
+                    userEntity.setPassword(request.getPassword());
+                else {
+                    logger.error("Error Occured while changing user password.");
+                    logger.info("Exit from Persisting User.");
+                    throw new ApplicationException(msgSrc.getMessage("User.IncorrectPassowrd", null, Locale.ENGLISH),
+                            HttpStatus.BAD_REQUEST);
+                }
             } else {
-                logger.error("Error Occured while changing user password.");
+                logger.error("Error Occured while persisting User Information.");
                 logger.info("Exit from Persisting User.");
-                throw new ApplicationException(msgSrc.getMessage("User.IncorrectPassowrd", null, Locale.ENGLISH),
+                throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                         HttpStatus.BAD_REQUEST);
             }
-        } else
-            userEntity.setPassword(request.getPassword());
+        } else {
+            EncryptorDTO encryptData = encryptor.encryptor(request.getPassword());
+            userEntity.setPassword(encryptData.getHashText());
+            userEntity.setSalt(encryptData.getSalt());
+        }
         userEntity.setEmail(request.getEmail());
-        // add hashing here
-        userEntity.setSalt("qwueyasduhk12312uqkeqjwe");
         userEntity.setCountry(request.getCountry());
         userEntity.setVerified(request.getIsVerified());
         userEntity.setUpdatedOn(LocalDateTime.now());
