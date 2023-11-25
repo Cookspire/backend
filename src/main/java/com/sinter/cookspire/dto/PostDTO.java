@@ -42,6 +42,8 @@ public class PostDTO {
 
     private byte[] imageData;
 
+    private RecipeResponseDTO recipeDetails;
+
     public PostDTO(long id, String content, UserDTO createdUser, long likes, long dislikes, boolean hasLiked,
             boolean hasDisliked, LocalDateTime createdOn, LocalDateTime updatedOn) {
         this.id = id;
@@ -57,7 +59,7 @@ public class PostDTO {
 
     public PostDTO(long id, String content, UserDTO createdUser, long likes, long dislikes, boolean hasLiked,
             boolean hasDisliked, LocalDateTime createdOn, LocalDateTime updatedOn, String imageName, String imageType,
-            byte[] imageData) {
+            byte[] imageData, RecipeResponseDTO recipeDetails) {
         this.id = id;
         this.content = content;
         this.createdUser = createdUser;
@@ -70,9 +72,7 @@ public class PostDTO {
         this.imageName = imageName;
         this.imageType = imageType;
         this.imageData = imageData;
+        this.recipeDetails = recipeDetails;
     }
-
-    
-
 
 }

@@ -3,6 +3,7 @@ package com.sinter.cookspire.service;
 import java.util.List;
 
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.dto.RecipeResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 
 import jakarta.validation.Valid;
@@ -11,7 +12,7 @@ public interface RecipeService {
 
     RecipeDTO persistRecipe(RecipeDTO request);
 
-    RecipeDTO fetchRecipeByPost(@Valid Long postId);
+    RecipeResponseDTO fetchRecipeByPost(@Valid Long postId);
 
     ResponseDTO deleteRecipe(@Valid Long recipeId);
 
@@ -25,6 +26,8 @@ public interface RecipeService {
 
     List<RecipeDTO> fetchRecipesByCourse(String course);
 
-    public RecipeDTO fetchRecipe(long recipeId);
+    RecipeDTO fetchRecipe(long recipeId);
+
+    RecipeResponseDTO fetchRecipeByIngredient(long recipeId);
     
 }
