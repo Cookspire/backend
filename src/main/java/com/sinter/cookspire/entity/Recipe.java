@@ -35,7 +35,7 @@ public class Recipe {
     private long id;
 
     @Lob
-    @Column(length = 3000)
+    @Column(columnDefinition = "TEXT")
     private String instruction;
 
     @NonNull

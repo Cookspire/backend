@@ -100,24 +100,27 @@ public class RecipeController {
     }
 
     @GetMapping(value = "/load/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> LoadAllRecipe() {
+    public ResponseEntity<?> LoadAllRecipe() 
+    {
         logger.info("Entering loading recipe logic");
 
-        String csvFile = "D:\\WebDevProjects\\TUD_Projects\\WEB-9810_Projects\\LabWork\\dataset\\test_dataset\\tt.csv";
+        String csvFile = "D:\\WebDevProjects\\TUD_Projects\\WEB-9810_Projects\\LabWork\\dataset\\test_dataset\\recipe_test.csv";
 
         try (CSVReader csvReader = new CSVReader(new FileReader(csvFile))) {
             List<String[]> records = csvReader.readAll();
-            long i=1;
+
             for (String[] record : records) {
-                String modified_text=record[0].replaceAll("/^[^ A-Za-z0-9_@./#&+-]*$/","");
-                if(!modified_text.matches("/^[A-Za-z0-9]$/")){
-                    modified_text="";
-                }
-                Optional<Recipe> chkRecipe= recipeRepo.findById(i);
-                chkRecipe.get().setInstruction(modified_text);
-                recipeRepo.save(chkRecipe.get());
-                i++;
-                System.out.println(i);
+                record[5] = record[5].replaceAll("[^a-zA-Z ]", "");
+                String shortDesc = record[5].substring(0, Math.min(record[5].length(), 150));
+
+                String prepare_time = record[11].length() > 0 ? record[11] : "0";
+                String cooking_time = record[1].length() > 0 ? record[1] : "0";
+                String name = record[10].replaceAll("[^a-zA-Z ]", "");
+                RecipeDTO recipeDTO = new RecipeDTO(0, record[7], name, Level.UNKNOWN,
+                        shortDesc, record[4], record[2], record[6], Integer.parseInt(prepare_time),
+                        Integer.parseInt(cooking_time), LocalDateTime.now(), LocalDateTime.now(), false, 0, record[15],
+                        "url", null);
+                recipeService.persistRecipe(recipeDTO);
             }
         } catch (IOException | CsvException e) {
             e.printStackTrace();
