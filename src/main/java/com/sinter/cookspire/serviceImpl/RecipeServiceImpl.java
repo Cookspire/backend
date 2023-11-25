@@ -223,7 +223,7 @@ public class RecipeServiceImpl implements RecipeService {
 
             Recipe recipeEntity = chkRecipe.get();
             Long postId = recipeEntity.getPost() != null ? recipeEntity.getPost().getId() : 0;
-            System.out.println(recipeEntity.getInstruction());
+            System.out.println(recipeEntity.getInstruction().length());
             return new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
                     recipeEntity.getLevel(),
                     recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
