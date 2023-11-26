@@ -25,7 +25,7 @@ public class Encryptor {
                 sb.append(Integer.toString((bytes[i] &(0xff))+0x100, 16).substring(1));
             }
             response.setHashText(sb.toString());
-            response.setSalt(salt.toString());
+            response.setSalt(salt);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
@@ -36,6 +36,7 @@ public class Encryptor {
     public static byte[] generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
+        random.nextBytes(salt);
         random.nextBytes(salt);
         return salt;
     }

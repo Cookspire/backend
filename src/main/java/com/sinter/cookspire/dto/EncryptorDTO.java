@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EncryptorDTO {
     
-    private String salt;
+    private byte[] salt;
 
     private String hashText;
 }

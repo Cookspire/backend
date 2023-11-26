@@ -34,7 +34,7 @@ public class Users {
   @Column(length = 200)
   private String email;
 
-  private String salt;
+  private byte[] salt;
 
   private String password;
 
@@ -62,28 +62,28 @@ public class Users {
   @Lob
   private byte[] imageData;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users")
   private List<Post> posts;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Bookmark> bookmarks;
 
-  @OneToMany(mappedBy = "followerUsers", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "followerUsers", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Follower> followers;
 
-  @OneToMany(mappedBy = "followeeUsers", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "followeeUsers", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Follower> followee;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Comment> comments;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Replies> replies;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<RefreshToken> refreshTokens;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<PostInteraction> postInteractions;
 
 }

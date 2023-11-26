@@ -3,6 +3,8 @@ package com.sinter.cookspire.entity;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Entity;
@@ -24,10 +26,12 @@ public class Bookmark {
     private long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "post_id")
     private Post posts;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "createdBy")
     private Users users;
 
