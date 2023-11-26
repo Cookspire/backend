@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.CascadeType;
@@ -49,7 +51,8 @@ public class Post {
     @Lob
     private byte[] imageData;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "createdBy")
     private Users users;
 
@@ -64,4 +67,5 @@ public class Post {
 
     @OneToMany(mappedBy = "posts", cascade = CascadeType.ALL)
     private List<PostInteraction> postInteractions;
+    
 }
