@@ -83,7 +83,7 @@ public class PostServiceImpl implements PostService {
         } else {
             logger.error("Error occured while persisting post.");
             logger.info("Exit from persisting post.");
-            throw new ApplicationException(msgSrc.getMessage("Post.Error", null, Locale.ENGLISH),
+            throw new ApplicationException(msgSrc.getMessage("Post.NotFound", null, Locale.ENGLISH),
                     HttpStatus.BAD_REQUEST);
         }
 

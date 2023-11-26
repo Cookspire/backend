@@ -77,8 +77,6 @@ public class UserServiceImpl implements UserService {
         if (request.getId() != 0 && chkUser.isPresent()) {
             userEntity.setCreatedOn(chkUser.get().getCreatedOn());
             userEntity.setId(chkUser.get().getId());
-            System.out.println(chkUser.get().getEmail());
-            System.out.println(request.getEmail());
             if (!chkUser.get().getEmail().equals(request.getEmail())) {
                 Optional<Users> chkEmail = userRepo.findByEmail(request.getEmail());
                 if (chkEmail.isPresent()) {
@@ -113,8 +111,11 @@ public class UserServiceImpl implements UserService {
             if (chkUser.isPresent()) {
                 boolean passwordChecker = decryptor.isSame(chkUser.get().getPassword(), request.getOldPassword(),
                         chkUser.get().getSalt());
-                if (passwordChecker)
-                    userEntity.setPassword(request.getPassword());
+                if (passwordChecker) {
+                    EncryptorDTO encryptData = encryptor.encryptor(request.getPassword());
+                    userEntity.setPassword(encryptData.getHashText());
+                    userEntity.setSalt(encryptData.getSalt());
+                }
                 else {
                     logger.error("Error Occured while changing user password.");
                     logger.info("Exit from Persisting User.");
@@ -127,17 +128,19 @@ public class UserServiceImpl implements UserService {
                 throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                         HttpStatus.BAD_REQUEST);
             }
-        } else {
+        } else if (chkUser.isEmpty()) {
             EncryptorDTO encryptData = encryptor.encryptor(request.getPassword());
             userEntity.setPassword(encryptData.getHashText());
             userEntity.setSalt(encryptData.getSalt());
         }
+        logger.info("After encryption");
         userEntity.setEmail(request.getEmail());
         userEntity.setCountry(request.getCountry());
         userEntity.setVerified(request.getIsVerified());
         userEntity.setUpdatedOn(LocalDateTime.now());
-
+        logger.info("After setting user details");
         long userId = userRepo.save(userEntity).getId();
+        logger.info("After setting user details");
         logger.info("Exit from Persisting User.");
         return new UserDTO(userId, userEntity.getUsername(), userEntity.getEmail(), userEntity.getPassword(),
                 userEntity.getCountry(), userEntity.isVerified(), userEntity.getBio(), userEntity.getCreatedOn(),
@@ -289,7 +292,6 @@ public class UserServiceImpl implements UserService {
             boolean passwordChecker = decryptor.isSame(chkUser.get().getPassword(), request.getPassword(),
                     chkUser.get().getSalt());
 
-                    
             if (!passwordChecker) {
                 logger.error("Error Occured while changing user password.");
                 logger.info("Exit from Persisting User.");
