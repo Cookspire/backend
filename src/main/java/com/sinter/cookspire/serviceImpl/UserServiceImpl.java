@@ -202,8 +202,8 @@ public class UserServiceImpl implements UserService {
 
             System.out.println(chkFollower.isPresent());
 
-            if (chkFollower.isPresent()) {
-                logger.warn("User not found");
+            if (chkFollower.isPresent() && request.isFollowUser()) {
+                logger.warn("User already followed");
                 logger.info("Exit from Persist Follow User.");
                 throw new ApplicationException(msgSrc.getMessage("User.Followed", null, Locale.ENGLISH),
                         HttpStatus.NOT_FOUND);
@@ -260,15 +260,25 @@ public class UserServiceImpl implements UserService {
 
             for (var followerEntity : followers) {
                 followerList.add(new FollowersDataDTO(followerEntity.getFolloweeUsers().getId(),
-                        followerEntity.getFolloweeUsers().getUsername(),
-                        followerEntity.getFolloweeUsers().isVerified()));
+                        followerEntity.getFolloweeUsers().isVerified(), followerEntity.getFolloweeUsers().getUsername(),
+                        followerEntity.getFolloweeUsers().getEmail(), followerEntity.getFolloweeUsers().getCountry(),
+                        followerEntity.getFolloweeUsers().getBio(), followerEntity.getFolloweeUsers().getCreatedOn(),
+                        followerEntity.getFolloweeUsers().getUpdatedOn(),
+                        followerEntity.getFolloweeUsers().getImageName(),
+                        followerEntity.getFolloweeUsers().getImageType(),
+                        followerEntity.getFolloweeUsers().getImageData()));
             }
             response.setFollowers(followerList);
 
             for (var followeeEntity : following) {
-                followeeList.add(new FollowersDataDTO(followeeEntity.getFollowerUsers().getId(),
-                        followeeEntity.getFollowerUsers().getUsername(),
-                        followeeEntity.getFollowerUsers().isVerified()));
+                followeeList.add(new FollowersDataDTO(followeeEntity.getFolloweeUsers().getId(),
+                        followeeEntity.getFolloweeUsers().isVerified(), followeeEntity.getFolloweeUsers().getUsername(),
+                        followeeEntity.getFolloweeUsers().getEmail(), followeeEntity.getFolloweeUsers().getCountry(),
+                        followeeEntity.getFolloweeUsers().getBio(), followeeEntity.getFolloweeUsers().getCreatedOn(),
+                        followeeEntity.getFolloweeUsers().getUpdatedOn(),
+                        followeeEntity.getFolloweeUsers().getImageName(),
+                        followeeEntity.getFolloweeUsers().getImageType(),
+                        followeeEntity.getFolloweeUsers().getImageData()));
             }
             response.setFollowing(followeeList);
 
