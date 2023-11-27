@@ -3,8 +3,7 @@ package com.sinter.cookspire.dto;
 import lombok.Data;
 
 @Data
-public class ImageUploadDTO {
+public class SearchRequestDTO {
 
-    private long id;
-
+    private String query;
 }

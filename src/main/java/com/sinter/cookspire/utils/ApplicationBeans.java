@@ -26,8 +26,8 @@ public class ApplicationBeans {
 
     }
 
-    public ApplicationBeans(MappingJackson2HttpMessageConverter convertor){
-         var supportedMediaTypes = new ArrayList<>(convertor.getSupportedMediaTypes());
+    public ApplicationBeans(MappingJackson2HttpMessageConverter convertor) {
+        var supportedMediaTypes = new ArrayList<>(convertor.getSupportedMediaTypes());
         supportedMediaTypes.add(new MediaType("application", "octet-stream"));
         convertor.setSupportedMediaTypes(supportedMediaTypes);
     }

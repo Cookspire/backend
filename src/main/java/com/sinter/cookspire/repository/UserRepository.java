@@ -22,4 +22,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     List<Users> findAllByIsVerifiedTrue();
 
+    @Query(nativeQuery = true, value="select * from users where username ILIKE %:search%")
+    List<Users> filterUsers(@Param("search") String search);
+
 }

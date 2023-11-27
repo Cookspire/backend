@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sinter.cookspire.entity.Post;
@@ -26,4 +27,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     List<Recipe> findByCourseIgnoreCase(String course, Pageable pagination);
 
+    @Query(nativeQuery = true, value="select * from recipe where name ILIKE %:search% LIMIT 10")
+    List<Recipe> filterRecipe(@Param("search") String search);
 }
