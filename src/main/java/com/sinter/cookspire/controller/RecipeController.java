@@ -4,11 +4,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +19,18 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.repository.RecipeRepository;
 import com.sinter.cookspire.service.RecipeService;
+import com.sinter.cookspire.utils.ImageSignatureValidator;
 import com.sinter.cookspire.utils.Level;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -46,12 +51,46 @@ public class RecipeController {
     @Autowired
     RecipeRepository recipeRepo;
 
+    @Autowired
+    ImageSignatureValidator imageSign;
+
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    @PutMapping(value = "/persist/recipe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody RecipeDTO request) {
-        logger.info("Entering persist recipe logic");
-        return new ResponseEntity<>(recipeService.persistRecipe(request), HttpStatus.OK);
+    @PutMapping(value = "/persist/recipe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> persistRecipe(@RequestPart(value = "data") @Valid RecipeDTO request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+
+        if (null != file) {
+            try {
+                logger.info("Entering persist recipe with image logic");
+                if (imageSign.processImageFormat(file.getInputStream())
+                        && (file.getOriginalFilename() != null
+                                && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
+                                ||
+                                file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))) {
+
+                    request.setImageData(file.getBytes());
+                    request.setImageType(file.getContentType());
+                    request.setImageName(file.getOriginalFilename());
+                    return new ResponseEntity<>(recipeService.persistRecipe(request), HttpStatus.OK);
+
+                } else {
+                    logger.error("Invalid Signature for recipe with image.");
+                    logger.error("Exiting from recipe with image logic.");
+                    throw new ApplicationException(msgSrc.getMessage("User.Error", null, Locale.ENGLISH),
+                            HttpStatus.BAD_REQUEST);
+                }
+            } catch (NoSuchMessageException | IOException e) {
+                logger.error("Invalid Signature for recipe with image.");
+                logger.error("Exiting from post with recipe logic.");
+                throw new ApplicationException(msgSrc.getMessage("User.Error", null, Locale.ENGLISH),
+                        HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            logger.info("Entering persist recipe logic without image");
+            return new ResponseEntity<>(recipeService.persistRecipe(request), HttpStatus.OK);
+        }
+
     }
 
     @PostMapping(value = "/fetch/recipe/post", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -91,8 +130,7 @@ public class RecipeController {
     }
 
     @GetMapping(value = "/load/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> LoadAllRecipe() 
-    {
+    public ResponseEntity<?> LoadAllRecipe() {
         logger.info("Entering loading recipe logic");
 
         String csvFile = "D:\\WebDevProjects\\TUD_Projects\\WEB-9810_Projects\\LabWork\\dataset\\test_dataset\\recipe_test.csv";

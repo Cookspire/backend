@@ -33,7 +33,7 @@ public class RepliesController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PutMapping(value = "/persist/replies", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody RepliesDTO request) {
+    public ResponseEntity<?> persistReplies(@RequestBody RepliesDTO request) {
         logger.info("Entering persist replies logic");
         return new ResponseEntity<>(repliesService.persistReplies(request), HttpStatus.OK);
     }

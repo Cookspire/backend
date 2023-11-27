@@ -113,7 +113,7 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
                 recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
                 recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
-                0, recipeEntity.getImageName(), recipeEntity.getImageType(), recipeEntity.getImageData());
+                request.getPostId(), recipeEntity.getImageName(), recipeEntity.getImageType(), recipeEntity.getImageData());
     }
 
     @Override

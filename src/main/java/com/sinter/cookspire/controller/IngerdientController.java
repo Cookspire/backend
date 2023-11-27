@@ -45,7 +45,7 @@ public class IngerdientController {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @PutMapping(value = "/persist/ingredient", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody List<IngredientDTO> request) {
+    public ResponseEntity<?> persistIngredient(@RequestBody List<IngredientDTO> request) {
         logger.info("Entering persist ingredient logic");
         return new ResponseEntity<>(ingredientService.persistIngredient(request), HttpStatus.OK);
     }

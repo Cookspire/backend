@@ -100,6 +100,14 @@ public class PostServiceImpl implements PostService {
 
         postEntity.setUpdatedOn(LocalDateTime.now());
 
+        if (request.getImageData() != null && request.getImageType() != null) {
+            String imageName = request.getImageName() != null ? request.getImageName()
+                    : "IMG_" + LocalDateTime.now().toString();
+            postEntity.setImageData(request.getImageData());
+            postEntity.setImageName(imageName);
+            postEntity.setImageType(request.getImageType());
+        }
+
         long postId = postRepo.save(postEntity).getId();
         logger.info("Exit from persisting post.");
         return new PostDTO(postId, request.getContent(),
@@ -131,12 +139,15 @@ public class PostServiceImpl implements PostService {
             }
             return new PostDTO(postId, postEntity.getContent(),
                     new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
-                            postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
-                            postEntity.getUsers().getCountry(),
-                            postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
-                            postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
+                            postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
+                            postEntity.getUsers().isVerified(),
+                            postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
+                            postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
+                            postEntity.getUsers().getImageType(),
+                            postEntity.getUsers().getImageData()),
                     like,
-                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn());
+                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
+                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData());
         }
 
         else {
@@ -169,13 +180,16 @@ public class PostServiceImpl implements PostService {
                 }
 
                 response.add(new PostDTO(postEntity.getId(), postEntity.getContent(),
-                        new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
-                                postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
-                                postEntity.getUsers().getCountry(),
-                                postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
-                                postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
-                        like,
-                        dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn()));
+                    new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                            postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
+                            postEntity.getUsers().isVerified(),
+                            postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
+                            postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
+                            postEntity.getUsers().getImageType(),
+                            postEntity.getUsers().getImageData()),
+                    like,
+                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
+                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData()));
 
             }
         } else {
@@ -260,13 +274,16 @@ public class PostServiceImpl implements PostService {
                     }
                 }
                 response.add(new PostDTO(postEntity.getId(), postEntity.getContent(),
-                        new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
-                                postEntity.getUsers().getEmail(), postEntity.getUsers().getPassword(),
-                                postEntity.getUsers().getCountry(),
-                                postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
-                                postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
-                        like,
-                        dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn()));
+                    new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                            postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
+                            postEntity.getUsers().isVerified(),
+                            postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
+                            postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
+                            postEntity.getUsers().getImageType(),
+                            postEntity.getUsers().getImageData()),
+                    like,
+                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
+                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData()));
             }
 
         }

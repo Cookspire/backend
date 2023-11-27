@@ -78,8 +78,7 @@ public class UserController {
 
         logger.info("Entering vaidate image signature logic");
         try {
-            if ((imageSign.isValigJpeg(file.getInputStream()) ||
-                    imageSign.isValigPng(file.getInputStream()))
+            if (imageSign.processImageFormat(file.getInputStream())
                     && (file.getOriginalFilename() != null && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
                             ||
                             file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))) {
