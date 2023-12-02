@@ -1,10 +1,12 @@
 package com.sinter.cookspire.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class SpotlightResponseDTO {
-    
+
     private boolean isfollower;
 
     private boolean isfollowing;
@@ -26,5 +28,9 @@ public class SpotlightResponseDTO {
     private String imageType;
 
     private byte[] imageData;
+
+    public SpotlightResponseDTO() {
+
+    }
 
 }
