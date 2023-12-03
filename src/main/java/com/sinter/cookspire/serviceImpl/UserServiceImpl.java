@@ -22,6 +22,8 @@ import com.sinter.cookspire.dto.ImageRequestDTO;
 import com.sinter.cookspire.dto.JWTResponseDTO;
 import com.sinter.cookspire.dto.RefreshTokenDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
+import com.sinter.cookspire.dto.SpotlightRequestDTO;
+import com.sinter.cookspire.dto.SpotlightResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.dto.UserGeneralAnalysisDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
@@ -153,11 +155,10 @@ public class UserServiceImpl implements UserService {
         Optional<Users> chkUser = userRepo.findByEmail(email);
 
         if (chkUser.isPresent()) {
-            Users userEntity = chkUser.get();
-            return new UserDTO(userEntity.getId(), userEntity.getUsername(), userEntity.getEmail(),
-                    userEntity.getPassword(),
-                    userEntity.getCountry(), userEntity.isVerified(), userEntity.getBio(), userEntity.getCreatedOn(),
-                    userEntity.getUpdatedOn());
+            return new UserDTO(chkUser.get().getId(), chkUser.get().getUsername(), chkUser.get().getEmail(),
+                    chkUser.get().getCountry(), chkUser.get().isVerified(), chkUser.get().getBio(),
+                    chkUser.get().getCreatedOn(), chkUser.get().getUpdatedOn(), chkUser.get().getImageName(),
+                    chkUser.get().getImageType(), chkUser.get().getImageData());
         }
 
         else {
@@ -271,14 +272,14 @@ public class UserServiceImpl implements UserService {
             response.setFollowers(followerList);
 
             for (var followeeEntity : following) {
-                followeeList.add(new FollowersDataDTO(followeeEntity.getFolloweeUsers().getId(),
-                        followeeEntity.getFolloweeUsers().isVerified(), followeeEntity.getFolloweeUsers().getUsername(),
-                        followeeEntity.getFolloweeUsers().getEmail(), followeeEntity.getFolloweeUsers().getCountry(),
-                        followeeEntity.getFolloweeUsers().getBio(), followeeEntity.getFolloweeUsers().getCreatedOn(),
-                        followeeEntity.getFolloweeUsers().getUpdatedOn(),
-                        followeeEntity.getFolloweeUsers().getImageName(),
-                        followeeEntity.getFolloweeUsers().getImageType(),
-                        followeeEntity.getFolloweeUsers().getImageData()));
+                followeeList.add(new FollowersDataDTO(followeeEntity.getFollowerUsers().getId(),
+                        followeeEntity.getFollowerUsers().isVerified(), followeeEntity.getFollowerUsers().getUsername(),
+                        followeeEntity.getFollowerUsers().getEmail(), followeeEntity.getFollowerUsers().getCountry(),
+                        followeeEntity.getFollowerUsers().getBio(), followeeEntity.getFollowerUsers().getCreatedOn(),
+                        followeeEntity.getFollowerUsers().getUpdatedOn(),
+                        followeeEntity.getFollowerUsers().getImageName(),
+                        followeeEntity.getFollowerUsers().getImageType(),
+                        followeeEntity.getFollowerUsers().getImageData()));
             }
             response.setFollowing(followeeList);
 
@@ -360,7 +361,7 @@ public class UserServiceImpl implements UserService {
             userRepo.save(chkUser.get());
         } else {
             logger.warn("User not found");
-            logger.info("Exit from fetcing all followers.");
+            logger.info("Exit from uploading profile pic.");
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
@@ -368,6 +369,65 @@ public class UserServiceImpl implements UserService {
                 chkUser.get().getCountry(), chkUser.get().isVerified(), chkUser.get().getBio(),
                 chkUser.get().getCreatedOn(), chkUser.get().getUpdatedOn(), chkUser.get().getImageName(),
                 chkUser.get().getImageType(), chkUser.get().getImageData());
+    }
+
+    @Override
+    public SpotlightResponseDTO fetchProfileSpotLight(SpotlightRequestDTO request) {
+
+        Optional<Users> chkUser = userRepo.findByEmail(request.getCurrentUser());
+
+        SpotlightResponseDTO response = new SpotlightResponseDTO();
+
+        if (chkUser.isPresent()) {
+
+            Optional<Users> chkSpotlightUser = userRepo.findByEmail(request.getSpotlightUser());
+
+            if (!chkSpotlightUser.isPresent()) {
+                logger.warn("Spotlight user not found");
+                logger.info("Exit from fetch ProfileSpot Light User.");
+                throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                        HttpStatus.NOT_FOUND);
+            } else {
+                Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkUser.get(),
+                        chkSpotlightUser.get());
+
+                Optional<Follower> chkFollowing = followerRepo
+                        .findByFolloweeUsersAndFollowerUsers(chkSpotlightUser.get(), chkUser.get());
+
+                if (chkFollower.isPresent())
+                    response.setIsfollowing(true);
+                else
+                    response.setIsfollowing(false);
+
+                if (chkFollowing.isPresent())
+                    response.setIsfollower(true);
+                else
+                    response.setIsfollower(false);
+
+                response.setBio(chkSpotlightUser.get().getBio());
+                response.setCountry(chkSpotlightUser.get().getCountry());
+                response.setEmail(chkSpotlightUser.get().getEmail());
+                response.setId(chkSpotlightUser.get().getId());
+                response.setImageData(chkSpotlightUser.get().getImageData());
+                response.setImageName(chkSpotlightUser.get().getImageName());
+                response.setImageType(chkSpotlightUser.get().getImageType());
+                response.setIsVerified(chkSpotlightUser.get().isVerified());
+                response.setUsername(chkSpotlightUser.get().getUsername());
+                return response;
+            }
+
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from fetch ProfileSpot Light User.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public List<SpotlightResponseDTO> fetchRandomUsers(@Valid String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'fetchRandomUsers'");
     }
 
 }

@@ -35,20 +35,8 @@ public class UserDTO {
 
     private byte[] imageData;
 
-    public UserDTO(long id, String username, String email, String password, String country, Boolean isVerified,
-            String bio, LocalDateTime createdOn, LocalDateTime updatedOn) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.country = country;
-        this.isVerified = isVerified;
-        this.bio = bio;
-        this.createdOn = createdOn;
-        this.updatedOn = updatedOn;
-    }
 
-    public UserDTO(long id, String username, String email, String country, Boolean isVerified, String bio,
+     public UserDTO(long id, String username, String email, String country, Boolean isVerified, String bio,
             LocalDateTime createdOn, LocalDateTime updatedOn, String imageName, String imageType, byte[] imageData) {
         this.id = id;
         this.username = username;
@@ -63,10 +51,22 @@ public class UserDTO {
         this.imageData = imageData;
     }
 
-    public UserDTO() {
-        
+    public UserDTO(long id, String username, String email, String password, String country, Boolean isVerified,
+            String bio, LocalDateTime createdOn, LocalDateTime updatedOn) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.country = country;
+        this.isVerified = isVerified;
+        this.bio = bio;
+        this.createdOn = createdOn;
+        this.updatedOn = updatedOn;
     }
 
-    
+    public UserDTO(){
+        
+    }
+   
 
 }
