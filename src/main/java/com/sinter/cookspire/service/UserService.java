@@ -1,10 +1,14 @@
 package com.sinter.cookspire.service;
 
+import java.util.List;
+
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.FollowerResponseDTO;
 import com.sinter.cookspire.dto.ImageRequestDTO;
 import com.sinter.cookspire.dto.JWTResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
+import com.sinter.cookspire.dto.SpotlightRequestDTO;
+import com.sinter.cookspire.dto.SpotlightResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.dto.UserGeneralAnalysisDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
@@ -28,5 +32,9 @@ public interface UserService {
     public UserGeneralAnalysisDTO fetchGeneralUserAnalysis(@Valid long userId);
 
     public UserDTO uploadProfilePicture(ImageRequestDTO imageDetails);
+
+    public SpotlightResponseDTO fetchProfileSpotLight(SpotlightRequestDTO request);
+
+    public List<SpotlightResponseDTO> fetchRandomUsers(@Valid String email);
 
 }

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.sinter.cookspire.dto.FollowerDTO;
 import com.sinter.cookspire.dto.ImageRequestDTO;
+import com.sinter.cookspire.dto.SpotlightRequestDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.service.RefreshTokenService;
@@ -67,6 +68,18 @@ public class UserController {
     public ResponseEntity<?> fetchUser(@RequestParam(value = "email") @Valid String email) {
         logger.info("Entering fetch user logic");
         return new ResponseEntity<>(userService.fetchUser(email), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetch/profile/spotlight", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchProfileSpotLight(@RequestBody SpotlightRequestDTO request) {
+        logger.info("Entering fetch profileSpotlight logic");
+        return new ResponseEntity<>(userService.fetchProfileSpotLight(request), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/fetch/random/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchRandomUsers(@RequestParam(value = "email") @Valid String email) {
+        logger.info("Entering fetch random users logic");
+        return new ResponseEntity<>(userService.fetchRandomUsers(email), HttpStatus.OK);
     }
 
     @PatchMapping(value = "/upload/profile/picture", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
