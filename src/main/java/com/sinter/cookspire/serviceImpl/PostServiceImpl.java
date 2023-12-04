@@ -167,11 +167,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDTO> fetchAllPost(@Valid Long userId) {
+    public List<PostDTO> fetchAllPost(String currentUser, String fetchUser) {
         List<PostDTO> response = new ArrayList<PostDTO>();
-        Optional<Users> chkUser = userRepo.findById(userId);
-        if (chkUser.isPresent()) {
-            List<Post> postEntries = postRepo.findAllByUsersOrderByUpdatedOnDesc(chkUser.get());
+        Optional<Users> chkUser = userRepo.findByEmail(currentUser);
+
+        Optional<Users> chkFetchUser = userRepo.findByEmail(fetchUser);
+        if (chkUser.isPresent() && chkFetchUser.isPresent()) {
+            List<Post> postEntries = postRepo.findAllByUsersOrderByUpdatedOnDesc(chkFetchUser.get());
 
             for (var postEntity : postEntries) {
                 long like = postInteractionRepo.fetchLikes(postEntity.getId());
@@ -238,10 +240,11 @@ public class PostServiceImpl implements PostService {
             List<Follower> following = followerRepo.findAllByFolloweeUsers(chkUser.get());
 
             for (var followerEntity : following) {
-                response.addAll(fetchAllPost(followerEntity.getFollowerUsers().getId()));
+                response.addAll(fetchAllPost(followerEntity.getFollowerUsers().getEmail(),
+                        followerEntity.getFollowerUsers().getEmail()));
             }
 
-            response.addAll(fetchAllPost(userId));
+            response.addAll(fetchAllPost(chkUser.get().getEmail(), chkUser.get().getEmail()));
 
             response = response.stream().sorted((ob1, ob2) -> ob2.getUpdatedOn().compareTo(ob1.getUpdatedOn()))
                     .collect(Collectors.toList());

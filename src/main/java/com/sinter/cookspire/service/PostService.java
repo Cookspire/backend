@@ -13,7 +13,7 @@ public interface PostService {
 
     PostDTO fetchPost(@Valid Long postId);
 
-    List<PostDTO> fetchAllPost(@Valid Long userId);
+    List<PostDTO> fetchAllPost(@Valid String currentUser, @Valid String fetchUser);
 
     List<PostDTO> fetchAllFollowersPost(Long userId);
 

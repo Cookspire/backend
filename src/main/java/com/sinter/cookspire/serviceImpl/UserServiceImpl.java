@@ -332,9 +332,9 @@ public class UserServiceImpl implements UserService {
         UserGeneralAnalysisDTO response = new UserGeneralAnalysisDTO();
 
         if (chkUser.isPresent()) {
-            response.setFollowerCount(followerRepo.countUserFollowers(userId));
+            response.setFollowerCount(followerRepo.countUserFollowing(userId));
 
-            response.setFollowingCount(followerRepo.countUserFollowing(userId));
+            response.setFollowingCount(followerRepo.countUserFollowers(userId));
 
             response.setPostCount(postRepo.findAllByUsers(chkUser.get()).size());
 
