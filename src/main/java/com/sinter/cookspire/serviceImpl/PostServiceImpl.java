@@ -240,8 +240,8 @@ public class PostServiceImpl implements PostService {
             List<Follower> following = followerRepo.findAllByFolloweeUsers(chkUser.get());
 
             for (var followerEntity : following) {
-                response.addAll(fetchAllPost(followerEntity.getFollowerUsers().getEmail(),
-                        followerEntity.getFollowerUsers().getEmail()));
+                response.addAll(fetchAllPost(
+                        chkUser.get().getEmail(), followerEntity.getFollowerUsers().getEmail()));
             }
 
             response.addAll(fetchAllPost(chkUser.get().getEmail(), chkUser.get().getEmail()));
