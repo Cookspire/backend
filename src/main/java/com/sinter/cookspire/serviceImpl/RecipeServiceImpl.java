@@ -8,7 +8,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.dto.RecipeResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.entity.Post;
 import com.sinter.cookspire.entity.Recipe;
@@ -25,6 +25,7 @@ import com.sinter.cookspire.exception.ApplicationException;
 import com.sinter.cookspire.repository.PostRepository;
 import com.sinter.cookspire.repository.RecipeRepository;
 import com.sinter.cookspire.repository.UserRepository;
+import com.sinter.cookspire.service.IngredientService;
 import com.sinter.cookspire.service.RecipeService;
 import com.sinter.cookspire.utils.Level;
 
@@ -38,6 +39,9 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Autowired
     RecipeRepository recipeRepo;
+
+    @Autowired
+    IngredientService ingredientService;
 
     @Autowired
     UserRepository userRepo;
@@ -113,26 +117,22 @@ public class RecipeServiceImpl implements RecipeService {
                 recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
                 recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
                 recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
-                request.getPostId(), recipeEntity.getImageName(), recipeEntity.getImageType(), recipeEntity.getImageData());
+                request.getPostId(), recipeEntity.getImageName(), recipeEntity.getImageType(),
+                recipeEntity.getImageData());
     }
 
     @Override
-    public RecipeDTO fetchRecipeByPost(@Valid Long postId) {
+    public RecipeResponseDTO fetchRecipeByPost(@Valid Long postId) {
         Optional<Post> chkPost = postRepo.findById(postId);
 
+        RecipeResponseDTO response = new RecipeResponseDTO();
         if (chkPost.isPresent()) {
             Optional<Recipe> chkRecipe = recipeRepo.findByPost(chkPost.get());
             if (chkRecipe.isEmpty()) {
-                return new RecipeDTO();
+                return new RecipeResponseDTO();
             }
-            Recipe recipeEntity = chkRecipe.get();
-            return new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
-                    recipeEntity.getLevel(),
-                    recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
-                    recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
-                    recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
-                    recipeEntity.getPost().getId(), recipeEntity.getImageName(), recipeEntity.getImageType(),
-                    recipeEntity.getImageData());
+            response = fetchRecipeByIngredient(chkRecipe.get().getId());
+
         }
 
         else {
@@ -141,6 +141,8 @@ public class RecipeServiceImpl implements RecipeService {
             throw new ApplicationException(msgSrc.getMessage("Recipe.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
+
+        return response;
 
     }
 
@@ -176,10 +178,10 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeDTO> fetchRecipesByCuisine(String cuisine) {
 
-        Pageable pagination= PageRequest.of(1, 20, Sort.by("name").ascending());
+        Pageable pagination = PageRequest.of(1, 20, Sort.by("name").ascending());
 
         List<RecipeDTO> response = new ArrayList<RecipeDTO>();
-        List<Recipe> recipesByCuisines = recipeRepo.findByCuisineIgnoreCase(cuisine,pagination);
+        List<Recipe> recipesByCuisines = recipeRepo.findByCuisineIgnoreCase(cuisine, pagination);
         System.out.println("Recipe fetch done!!");
         for (var recipe : recipesByCuisines) {
             Recipe recipeEntity = recipe;
@@ -205,7 +207,7 @@ public class RecipeServiceImpl implements RecipeService {
     @Override
     public List<RecipeDTO> fetchRecipesByCourse(String course) {
 
-        Pageable pagination= PageRequest.of(0, 20, Sort.by("name").ascending());
+        Pageable pagination = PageRequest.of(0, 20, Sort.by("name").ascending());
 
         List<RecipeDTO> response = new ArrayList<RecipeDTO>();
         List<Recipe> recipesByCourse = recipeRepo.findByCourseIgnoreCase(course, pagination);
@@ -231,7 +233,7 @@ public class RecipeServiceImpl implements RecipeService {
 
             Recipe recipeEntity = chkRecipe.get();
             Long postId = recipeEntity.getPost() != null ? recipeEntity.getPost().getId() : 0;
-            System.out.println(recipeEntity.getInstruction().length());
+
             return new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
                     recipeEntity.getLevel(),
                     recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
@@ -247,6 +249,41 @@ public class RecipeServiceImpl implements RecipeService {
             throw new ApplicationException(msgSrc.getMessage("Recipe.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
+    }
+
+    @Override
+    public RecipeResponseDTO fetchRecipeByIngredient(long recipeId) {
+
+        RecipeResponseDTO response = new RecipeResponseDTO();
+
+        Optional<Recipe> chkRecipe = recipeRepo.findById(recipeId);
+
+        if (chkRecipe.isPresent()) {
+
+            Recipe recipeEntity = chkRecipe.get();
+            Long postId = recipeEntity.getPost() != null ? recipeEntity.getPost().getId() : 0;
+
+            response.setIngredient(ingredientService.fetchAllIngredient(recipeId));
+            response.setRecipe(
+                    new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
+                            recipeEntity.getLevel(),
+                            recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
+                            recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
+                            recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
+                            postId, recipeEntity.getImageName(), recipeEntity.getImageType(),
+                            recipeEntity.getImageData()));
+
+        }
+
+        else {
+            logger.warn("Recipe not found.");
+            logger.info("Exit from fetching Recipe.");
+            throw new ApplicationException(msgSrc.getMessage("Recipe.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+
+        return response;
+
     }
 
 }

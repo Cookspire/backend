@@ -129,6 +129,12 @@ public class RecipeController {
         return new ResponseEntity<>(recipeService.fetchRecipe(recipeId), HttpStatus.OK);
     }
 
+    @PostMapping(value = "/fetch/complete/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchRecipeByIngredient(@PathParam(value = "id") long recipeId) {
+        logger.info("Entering fetch recipe logic");
+        return new ResponseEntity<>(recipeService.fetchRecipeByIngredient(recipeId), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/load/recipe", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> LoadAllRecipe() {
         logger.info("Entering loading recipe logic");

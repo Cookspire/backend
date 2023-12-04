@@ -24,9 +24,7 @@ public class SecurityConfig {
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                System.out.println(profile);
                 if (profile.equalsIgnoreCase("dev")) {
-                        System.out.println("in here!!");
                         http.csrf((csrf) -> csrf.disable()).authorizeHttpRequests((requests) -> requests
                                         .requestMatchers("*")
                                         .permitAll()

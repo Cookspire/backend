@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.PostDTO;
+import com.sinter.cookspire.dto.RecipeResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.entity.Follower;
@@ -27,6 +28,7 @@ import com.sinter.cookspire.repository.PostInteractionRepository;
 import com.sinter.cookspire.repository.PostRepository;
 import com.sinter.cookspire.repository.UserRepository;
 import com.sinter.cookspire.service.PostService;
+import com.sinter.cookspire.service.RecipeService;
 
 import jakarta.validation.Valid;
 
@@ -41,6 +43,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     FollowerRepository followerRepo;
+
+    @Autowired
+    RecipeService recipeService;
 
     @Autowired
     MessageSource msgSrc;
@@ -137,6 +142,9 @@ public class PostServiceImpl implements PostService {
                 hasLiked = chkLike.get().isLikes();
                 hasDisliked = chkLike.get().isDislikes();
             }
+
+            RecipeResponseDTO recipeData = recipeService.fetchRecipeByPost(postId);
+
             return new PostDTO(postId, postEntity.getContent(),
                     new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
                             postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
@@ -147,7 +155,7 @@ public class PostServiceImpl implements PostService {
                             postEntity.getUsers().getImageData()),
                     like,
                     dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
-                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData());
+                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData(), recipeData);
         }
 
         else {
@@ -179,17 +187,19 @@ public class PostServiceImpl implements PostService {
 
                 }
 
+                RecipeResponseDTO recipeData = recipeService.fetchRecipeByPost(postEntity.getId());
+
                 response.add(new PostDTO(postEntity.getId(), postEntity.getContent(),
-                    new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
-                            postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
-                            postEntity.getUsers().isVerified(),
-                            postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
-                            postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
-                            postEntity.getUsers().getImageType(),
-                            postEntity.getUsers().getImageData()),
-                    like,
-                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
-                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData()));
+                        new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                                postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
+                                postEntity.getUsers().isVerified(),
+                                postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
+                                postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
+                                postEntity.getUsers().getImageType(),
+                                postEntity.getUsers().getImageData()),
+                        like,
+                        dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
+                        postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData(), recipeData));
 
             }
         } else {
@@ -273,17 +283,20 @@ public class PostServiceImpl implements PostService {
 
                     }
                 }
+
+                RecipeResponseDTO recipeData = recipeService.fetchRecipeByPost(postEntity.getId());
+
                 response.add(new PostDTO(postEntity.getId(), postEntity.getContent(),
-                    new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
-                            postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
-                            postEntity.getUsers().isVerified(),
-                            postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
-                            postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
-                            postEntity.getUsers().getImageType(),
-                            postEntity.getUsers().getImageData()),
-                    like,
-                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
-                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData()));
+                        new UserDTO(postEntity.getUsers().getId(), postEntity.getUsers().getUsername(),
+                                postEntity.getUsers().getEmail(), postEntity.getUsers().getCountry(),
+                                postEntity.getUsers().isVerified(),
+                                postEntity.getUsers().getBio(), postEntity.getUsers().getCreatedOn(),
+                                postEntity.getUsers().getUpdatedOn(), postEntity.getUsers().getImageName(),
+                                postEntity.getUsers().getImageType(),
+                                postEntity.getUsers().getImageData()),
+                        like,
+                        dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
+                        postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData(), recipeData));
             }
 
         }
