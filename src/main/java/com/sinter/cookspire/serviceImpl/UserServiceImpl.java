@@ -304,10 +304,9 @@ public class UserServiceImpl implements UserService {
                     chkUser.get().getSalt());
 
             if (!passwordChecker) {
-                logger.error("Error Occured while changing user password.");
                 logger.info("Exit from Persisting User.");
                 throw new ApplicationException(msgSrc.getMessage("User.IncorrectPassowrd", null, Locale.ENGLISH),
-                        HttpStatus.BAD_REQUEST);
+                        HttpStatus.UNAUTHORIZED);
             }
 
             String access_token = jwtService.createToken(chkUser.get().getEmail());
@@ -317,6 +316,8 @@ public class UserServiceImpl implements UserService {
                     .getToken();
             return new JWTResponseDTO(chkUser.get().getEmail(), access_token, refresh);
         } else {
+            logger.error("User not found.");
+            logger.info("Exit from Persisting User.");
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.UNAUTHORIZED);
         }
@@ -388,8 +389,8 @@ public class UserServiceImpl implements UserService {
                 throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                         HttpStatus.NOT_FOUND);
             } else {
-                Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(chkUser.get(),
-                        chkSpotlightUser.get());
+                Optional<Follower> chkFollower = followerRepo.findByFollowerUsersAndFolloweeUsers(
+                        chkSpotlightUser.get(), chkUser.get());
 
                 Optional<Follower> chkFollowing = followerRepo
                         .findByFolloweeUsersAndFollowerUsers(chkSpotlightUser.get(), chkUser.get());
@@ -425,9 +426,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<SpotlightResponseDTO> fetchRandomUsers(@Valid String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'fetchRandomUsers'");
+    public List<SpotlightResponseDTO> fetchSuggestedUsers(@Valid String email) {
+
+        Optional<Users> chkUser = userRepo.findByEmail(email);
+
+        List<SpotlightResponseDTO> response = new ArrayList<SpotlightResponseDTO>();
+
+        if (chkUser.isPresent()) {
+            List<Users> suggestedUser = userRepo.filterRandomFollowers(chkUser.get().getId());
+
+            for (var user : suggestedUser) {
+                response.add(new SpotlightResponseDTO(false, false, user.getId(), user.getUsername(), user.getEmail(),
+                        user.getCountry(), user.isVerified(), user.getBio(),
+                        user.getImageName(), user.getImageType(), user.getImageData()));
+            }
+            return response;
+        } else {
+            logger.warn("User not found");
+            logger.info("Exit from fetch suggested User.");
+            throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
+                    HttpStatus.NOT_FOUND);
+        }
+
     }
 
 }

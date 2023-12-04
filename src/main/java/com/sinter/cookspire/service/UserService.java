@@ -35,6 +35,6 @@ public interface UserService {
 
     public SpotlightResponseDTO fetchProfileSpotLight(SpotlightRequestDTO request);
 
-    public List<SpotlightResponseDTO> fetchRandomUsers(@Valid String email);
+    public List<SpotlightResponseDTO> fetchSuggestedUsers(@Valid String email);
 
 }

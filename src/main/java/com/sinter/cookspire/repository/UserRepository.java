@@ -25,4 +25,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     @Query(nativeQuery = true, value="select * from users where username ILIKE %:search%")
     List<Users> filterUsers(@Param("search") String search);
 
+    @Query(nativeQuery = true, value="select * from users where id NOT in (select follower_id from follower where user_id= :user_id ) AND id<>:user_id LIMIT 3")
+    List<Users> filterRandomFollowers(@Param("user_id") long user_id);
+
 }

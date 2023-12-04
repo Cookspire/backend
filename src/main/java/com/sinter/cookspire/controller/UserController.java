@@ -76,10 +76,10 @@ public class UserController {
         return new ResponseEntity<>(userService.fetchProfileSpotLight(request), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetch/random/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchRandomUsers(@RequestParam(value = "email") @Valid String email) {
-        logger.info("Entering fetch random users logic");
-        return new ResponseEntity<>(userService.fetchRandomUsers(email), HttpStatus.OK);
+    @PostMapping(value = "/fetch/suggested/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchSuggestedUsers(@RequestParam(value = "email") @Valid String email) {
+        logger.info("Entering fetch suggested users logic");
+        return new ResponseEntity<>(userService.fetchSuggestedUsers(email), HttpStatus.OK);
     }
 
     @PatchMapping(value = "/upload/profile/picture", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
