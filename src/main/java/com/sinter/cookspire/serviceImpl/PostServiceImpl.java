@@ -122,7 +122,8 @@ public class PostServiceImpl implements PostService {
                         postEntity.getUsers().isVerified(), postEntity.getUsers().getBio(),
                         postEntity.getUsers().getCreatedOn(), postEntity.getUsers().getUpdatedOn()),
                 like,
-                dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn());
+                    dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
+                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData());
     }
 
     @Override
@@ -155,7 +156,7 @@ public class PostServiceImpl implements PostService {
                             postEntity.getUsers().getImageData()),
                     like,
                     dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
-                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData(), recipeData);
+                    postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData());
         }
 
         else {
@@ -201,7 +202,7 @@ public class PostServiceImpl implements PostService {
                                 postEntity.getUsers().getImageData()),
                         like,
                         dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
-                        postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData(), recipeData));
+                        postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData()));
 
             }
         } else {
@@ -299,7 +300,7 @@ public class PostServiceImpl implements PostService {
                                 postEntity.getUsers().getImageData()),
                         like,
                         dislike, hasLiked, hasDisliked, postEntity.getCreatedOn(), postEntity.getUpdatedOn(),
-                        postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData(), recipeData));
+                        postEntity.getImageName(), postEntity.getImageType(), postEntity.getImageData()));
             }
 
         }
