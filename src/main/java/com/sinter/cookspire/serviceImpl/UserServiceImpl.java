@@ -80,6 +80,8 @@ public class UserServiceImpl implements UserService {
         if (request.getId() != 0 && chkUser.isPresent()) {
             userEntity.setCreatedOn(chkUser.get().getCreatedOn());
             userEntity.setId(chkUser.get().getId());
+            userEntity.setPassword(chkUser.get().getPassword());
+            userEntity.setSalt(chkUser.get().getSalt());
             if (!chkUser.get().getEmail().equals(request.getEmail())) {
                 Optional<Users> chkEmail = userRepo.findByEmail(request.getEmail());
                 if (chkEmail.isPresent()) {
@@ -131,10 +133,13 @@ public class UserServiceImpl implements UserService {
                         HttpStatus.BAD_REQUEST);
             }
         } else if (chkUser.isEmpty()) {
+
             EncryptorDTO encryptData = encryptor.encryptor(request.getPassword());
             userEntity.setPassword(encryptData.getHashText());
             userEntity.setSalt(encryptData.getSalt());
+
         }
+
         logger.info("After encryption");
         userEntity.setEmail(request.getEmail());
         userEntity.setCountry(request.getCountry());

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,10 +27,22 @@ public class SearchController {
 
     Logger logger = LoggerFactory.getLogger(SearchController.class);
 
-    @PutMapping(value = "/search/cookspire", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> persistUser(@RequestBody SearchRequestDTO request) {
-        logger.info("Entering search logic");
-        return new ResponseEntity<>(searchService.searchCookspire(request), HttpStatus.OK);
+    @PostMapping(value = "/search/cookspire", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchSuggestion(@RequestBody SearchRequestDTO request) {
+        logger.info("Entering suggestions search logic");
+        return new ResponseEntity<>(searchService.searchSuggestions(request), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/search/recipe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchRecipe(@RequestBody SearchRequestDTO request) {
+        logger.info("Entering search recipe logic");
+        return new ResponseEntity<>(searchService.searchRecipe(request), HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/search/people", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchPeople(@RequestBody SearchRequestDTO request) {
+        logger.info("Entering search people logic");
+        return new ResponseEntity<>(searchService.searchUser(request), HttpStatus.OK);
     }
 
 }

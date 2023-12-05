@@ -53,10 +53,7 @@ public class PostController {
             try {
                 logger.info("Entering persist post with image logic");
                 if (imageSign.processImageFormat(file.getInputStream())
-                        && (file.getOriginalFilename() != null
-                                && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
-                                ||
-                                file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))) {
+                        && (file.getOriginalFilename() != null)) {
 
                     request.setImageData(file.getBytes());
                     request.setImageType(file.getContentType());
