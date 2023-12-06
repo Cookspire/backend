@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sinter.cookspire.dto.SearchRecipeRequestDTO;
 import com.sinter.cookspire.dto.SearchRequestDTO;
 import com.sinter.cookspire.service.SearchService;
 
@@ -37,6 +38,12 @@ public class SearchController {
     public ResponseEntity<?> searchRecipe(@RequestBody SearchRequestDTO request) {
         logger.info("Entering search recipe logic");
         return new ResponseEntity<>(searchService.searchRecipe(request), HttpStatus.OK);
+    }
+
+      @PostMapping(value = "/filter/recipe", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> searchPaginationRecipe(@RequestBody SearchRecipeRequestDTO request) {
+        logger.info("Entering search recipe logic");
+        return new ResponseEntity<>(searchService.searchPaginationRecipe(request), HttpStatus.OK);
     }
 
     @PostMapping(value = "/search/people", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

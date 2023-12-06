@@ -11,4 +11,6 @@ public class SearchSuggestionDTO {
 
     List<UserResponseDTO> users;
 
+    String query;
+
 }

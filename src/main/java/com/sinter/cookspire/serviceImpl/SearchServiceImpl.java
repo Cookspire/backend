@@ -7,9 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.RecipeResponseDTO;
+import com.sinter.cookspire.dto.SearchRecipeRequestDTO;
 import com.sinter.cookspire.dto.SearchRequestDTO;
 import com.sinter.cookspire.dto.SearchSuggestionDTO;
 import com.sinter.cookspire.dto.UserResponseDTO;
@@ -46,20 +50,31 @@ public class SearchServiceImpl implements SearchService {
 
         SearchSuggestionDTO response = new SearchSuggestionDTO();
 
+        List<UserResponseDTO> userResponse = new ArrayList<UserResponseDTO>();
+
+        List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
+        if (request.getQuery().trim().length() == 0) {
+
+            response.setRecipe(recipeResponse);
+
+            response.setUsers(userResponse);
+
+            response.setQuery("");
+            return response;
+        }
+
         List<Users> userFilter = userRepo.filterUsers(request.getQuery());
 
         List<Recipe> recipeFilter = recipeRepo.filterRecipeAndIngredient(request.getQuery());
 
         logger.info("SQL filter for search query complete.");
 
-        List<UserResponseDTO> userResponse = new ArrayList<UserResponseDTO>();
         for (var user : userFilter) {
             userResponse.add(new UserResponseDTO(user.getId(), user.getUsername(), user.getEmail(), user.getCountry(),
                     user.isVerified(), user.getBio(), user.getCreatedOn(), user.getUpdatedOn(), user.getImageName(),
                     user.getImageType(), user.getImageData()));
         }
 
-        List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
         for (var recipe : recipeFilter) {
             recipeResponse.add(recipeService.fetchRecipeByIngredient(recipe.getId()));
         }
@@ -67,6 +82,8 @@ public class SearchServiceImpl implements SearchService {
         response.setRecipe(recipeResponse);
 
         response.setUsers(userResponse);
+
+        response.setQuery(request.getQuery());
 
         logger.info("Exit from filter suggestion.");
 
@@ -101,6 +118,29 @@ public class SearchServiceImpl implements SearchService {
         }
 
         return userResponse;
+    }
+
+    @Override
+    public boolean searchPaginationRecipe(SearchRecipeRequestDTO request) {
+        // TODO Auto-generated method stub
+
+        Pageable pagination = PageRequest.of(1, 20, Sort.by("name").ascending());
+
+        // List<Recipe> recipeFilter = new ArrayList<Recipe>();
+        // if (request.getDietPlan().length() > 0 && request.getTiming().length() > 0) {
+        //     recipeFilter = recipeRepo.filterRecipeByDietAndTiming(request.getQuery(),
+        //             request.getDietPlan(), request.getFromTime(), request.getToTime(), pagination);
+        // } else if (request.getDietPlan().length() > 0) {
+        //     recipeFilter = recipeRepo.filterRecipeByDiet(request.getQuery(), request.getDietPlan());
+        // } else if (request.getTiming().length() > 0) {
+        //     recipeFilter = recipeRepo.filterRecipeByTiming(request.getQuery(), request.getTiming());
+        // }
+        // List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
+        // for (var recipe : recipeFilter) {
+        //     recipeResponse.add(recipeService.fetchRecipeByIngredient(recipe.getId()));
+        // }
+
+        return false;
     }
 
 }

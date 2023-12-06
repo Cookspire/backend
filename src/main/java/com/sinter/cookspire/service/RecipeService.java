@@ -3,6 +3,7 @@ package com.sinter.cookspire.service;
 import java.util.List;
 
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.dto.RecipePaginationDTO;
 import com.sinter.cookspire.dto.RecipeResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 
@@ -20,11 +21,11 @@ public interface RecipeService {
 
     List<String> fetchAllCuisine();
 
-    List<RecipeDTO> fetchRecipesByCuisine(String cuisine);
+    RecipePaginationDTO fetchRecipesByCuisine(String cuisine, int pageNumber);
 
     List<String> fetchAllCourse();
 
-    List<RecipeDTO> fetchRecipesByCourse(String course);
+    RecipePaginationDTO fetchRecipesByCourse(String course, int pageNumber);
 
     RecipeDTO fetchRecipe(long recipeId);
 

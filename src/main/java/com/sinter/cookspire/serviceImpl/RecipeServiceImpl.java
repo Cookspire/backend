@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.dto.RecipePaginationDTO;
 import com.sinter.cookspire.dto.RecipeResponseDTO;
 import com.sinter.cookspire.dto.ResponseDTO;
 import com.sinter.cookspire.entity.Post;
@@ -176,13 +178,13 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeDTO> fetchRecipesByCuisine(String cuisine) {
+    public RecipePaginationDTO fetchRecipesByCuisine(String cuisine, int pageNumber) {
 
-        Pageable pagination = PageRequest.of(1, 20, Sort.by("name").ascending());
+        Pageable pagination = PageRequest.of(pageNumber, 20, Sort.by("name").ascending());
 
         List<RecipeDTO> response = new ArrayList<RecipeDTO>();
-        List<Recipe> recipesByCuisines = recipeRepo.findByCuisineIgnoreCase(cuisine, pagination);
-        System.out.println("Recipe fetch done!!");
+        Page<Recipe> recipesByCuisines = recipeRepo.findByCuisineIgnoreCase(cuisine, pagination);
+
         for (var recipe : recipesByCuisines) {
             Recipe recipeEntity = recipe;
             RecipeDTO recipeDTO = new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(),
@@ -194,7 +196,7 @@ public class RecipeServiceImpl implements RecipeService {
             response.add(recipeDTO);
         }
 
-        return response;
+        return new RecipePaginationDTO(response, recipesByCuisines.getTotalPages() - 1);
     }
 
     @Override
@@ -205,12 +207,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public List<RecipeDTO> fetchRecipesByCourse(String course) {
+    public RecipePaginationDTO fetchRecipesByCourse(String course, int pageNumber) {
 
-        Pageable pagination = PageRequest.of(0, 20, Sort.by("name").ascending());
+        Pageable pagination = PageRequest.of(pageNumber, 20, Sort.by("name").ascending());
 
         List<RecipeDTO> response = new ArrayList<RecipeDTO>();
-        List<Recipe> recipesByCourse = recipeRepo.findByCourseIgnoreCase(course, pagination);
+        Page<Recipe> recipesByCourse = recipeRepo.findByCourseIgnoreCase(course, pagination);
         for (var recipe : recipesByCourse) {
             Recipe recipeEntity = recipe;
             RecipeDTO recipeDTO = new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(),
@@ -222,7 +224,7 @@ public class RecipeServiceImpl implements RecipeService {
             response.add(recipeDTO);
         }
 
-        return response;
+        return new RecipePaginationDTO(response, recipesByCourse.getTotalPages() - 1);
     }
 
     @Override
