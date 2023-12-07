@@ -16,7 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.dto.RecipePaginationDTO;
 import com.sinter.cookspire.dto.RecipeResponseDTO;
+import com.sinter.cookspire.dto.SearchRecipePageDTO;
 import com.sinter.cookspire.dto.SearchRecipeRequestDTO;
 import com.sinter.cookspire.dto.SearchRecipeResponseDTO;
 import com.sinter.cookspire.dto.SearchRequestDTO;
@@ -97,14 +99,24 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<RecipeResponseDTO> searchRecipe(SearchRequestDTO request) {
+    public RecipePaginationDTO searchRecipe(SearchRecipePageDTO request) {
 
-        List<Recipe> recipeFilter = recipeRepo.filterRecipe(request.getQuery());
+        Pageable pagination = PageRequest.of(request.getCurrentPageNumber(), 20);
+        Page<Recipe> recipeFilter = recipeRepo.filterGlobalRecipe(request.getQuery(), pagination);
         logger.info("SQL filter for search query complete.");
-        List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
-        for (var recipe : recipeFilter) {
-            recipeResponse.add(recipeService.fetchRecipeByIngredient(recipe.getId()));
+        RecipePaginationDTO recipeResponse = new RecipePaginationDTO();
+        List<RecipeDTO> recipeList = new ArrayList<RecipeDTO>();
+        for (var recipeEntity : recipeFilter) {
+            recipeList.add(new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
+                    recipeEntity.getLevel(),
+                    recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
+                    recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
+                    recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
+                    0, recipeEntity.getImageName(), recipeEntity.getImageType(),
+                    recipeEntity.getImageData()));
         }
+        recipeResponse.setRecipe(recipeList);
+        recipeResponse.setMaxPageNumber(recipeFilter.getTotalPages() - 1);
         logger.info("Exit from recipe filter.");
         return recipeResponse;
 

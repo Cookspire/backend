@@ -15,4 +15,6 @@ public class RecipeResponseDTO {
 
     private List<IngredientDTO> ingredient;
 
+    private int pageNumber;
+
 }

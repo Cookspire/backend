@@ -31,8 +31,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query(nativeQuery = true, value = "select recipe.name from recipe where recipe.name ILIKE %:search% LIMIT 5")
     List<String> filterRecipeAndIngredient(@Param("search") String search);
 
-    @Query(nativeQuery = true, value = "select * from recipe where name ILIKE %:search% LIMIT 10")
-    List<Recipe> filterRecipe(@Param("search") String search);
+    @Query(nativeQuery = true, value = "select * from recipe where name ILIKE %:search%")
+    Page<Recipe> filterGlobalRecipe(@Param("search") String search, Pageable pagination);
 
     @Query(nativeQuery = true, value = "select * from recipe where (lower(diet) = :diet or :diet is NULL) AND (cook_time_mins between :from_time AND :to_time) AND (lower(cuisine)=:cuisine or :cuisine is NULL) AND (lower(course)=:course or :course is NULL) AND (name ILIKE %:query% or :query is NULL)")
     Page<Recipe> filterRecipe(@Param("diet") String diet,
