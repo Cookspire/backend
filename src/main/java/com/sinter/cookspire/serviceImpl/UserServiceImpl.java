@@ -26,6 +26,7 @@ import com.sinter.cookspire.dto.SpotlightRequestDTO;
 import com.sinter.cookspire.dto.SpotlightResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.dto.UserGeneralAnalysisDTO;
+import com.sinter.cookspire.dto.UserResponseDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
 import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Users;
@@ -452,6 +453,27 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
+
+    }
+
+    @Override
+    public List<UserResponseDTO> fetchTrendingProfile() {
+
+        List<UserResponseDTO> verifiedUsers = new ArrayList<UserResponseDTO>();
+
+        List<Users> trendingUsers = userRepo.findAllByIsVerifiedTrue();
+
+        int i = 0;
+        for (var user : trendingUsers) {
+            if (i == 10)
+                break;
+            verifiedUsers
+                    .add(new UserResponseDTO(user.getUsername(), user.getEmail(), user.getCountry(), user.isVerified(),
+                            user.getImageName(), user.getImageType(), user.getImageData()));
+            i++;
+        }
+
+        return verifiedUsers;
 
     }
 

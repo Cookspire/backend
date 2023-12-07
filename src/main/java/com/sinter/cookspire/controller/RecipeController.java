@@ -63,7 +63,7 @@ public class RecipeController {
         if (null != file) {
             try {
                 logger.info("Entering persist recipe with image logic");
-                if (imageSign.processImageFormat(file.getInputStream())
+                if (imageSign.processImageFormat(file.getInputStream(), file.getContentType())
                         && (file.getOriginalFilename() != null
                                 && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
                                 ||

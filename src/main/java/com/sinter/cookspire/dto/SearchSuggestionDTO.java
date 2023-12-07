@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class SearchSuggestionDTO {
 
-    List<RecipeResponseDTO> recipe;
+    List<String> recipe;
 
     List<UserResponseDTO> users;
 

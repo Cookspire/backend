@@ -28,8 +28,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Page<Recipe> findByCourseIgnoreCase(String course, Pageable pagination);
 
-    @Query(nativeQuery = true, value = "select recipe.* from recipe inner join ingredient on recipe.id=ingredient.recipe_id where recipe.name ILIKE %:search% or ingredient.item ILIKE %:search% LIMIT 5")
-    List<Recipe> filterRecipeAndIngredient(@Param("search") String search);
+    @Query(nativeQuery = true, value = "select recipe.name from recipe where recipe.name ILIKE %:search% LIMIT 5")
+    List<String> filterRecipeAndIngredient(@Param("search") String search);
 
     @Query(nativeQuery = true, value = "select * from recipe where name ILIKE %:search% LIMIT 10")
     List<Recipe> filterRecipe(@Param("search") String search);

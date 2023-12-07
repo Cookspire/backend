@@ -52,7 +52,7 @@ public class SearchServiceImpl implements SearchService {
 
         List<UserResponseDTO> userResponse = new ArrayList<UserResponseDTO>();
 
-        List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
+        List<String> recipeResponse = new ArrayList<String>();
         if (request.getQuery().trim().length() == 0) {
 
             response.setRecipe(recipeResponse);
@@ -65,7 +65,7 @@ public class SearchServiceImpl implements SearchService {
 
         List<Users> userFilter = userRepo.filterUsers(request.getQuery());
 
-        List<Recipe> recipeFilter = recipeRepo.filterRecipeAndIngredient(request.getQuery());
+        List<String> recipeFilter = recipeRepo.filterRecipeAndIngredient(request.getQuery());
 
         logger.info("SQL filter for search query complete.");
 
@@ -76,7 +76,7 @@ public class SearchServiceImpl implements SearchService {
         }
 
         for (var recipe : recipeFilter) {
-            recipeResponse.add(recipeService.fetchRecipeByIngredient(recipe.getId()));
+            recipeResponse.add(recipe.trim());
         }
 
         response.setRecipe(recipeResponse);

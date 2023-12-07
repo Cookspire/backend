@@ -31,4 +31,20 @@ public class UserResponseDTO {
 
     private byte[] imageData;
 
+    public UserResponseDTO() {
+
+    }
+
+    public UserResponseDTO(String username, String email, String country, Boolean isVerified, String imageName,
+            String imageType,
+            byte[] imageData) {
+        this.username = username;
+        this.email = email;
+        this.country = country;
+        this.isVerified = isVerified;
+        this.imageName = imageName;
+        this.imageType = imageType;
+        this.imageData = imageData;
+    }
+
 }
