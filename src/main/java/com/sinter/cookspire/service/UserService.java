@@ -11,6 +11,7 @@ import com.sinter.cookspire.dto.SpotlightRequestDTO;
 import com.sinter.cookspire.dto.SpotlightResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.dto.UserGeneralAnalysisDTO;
+import com.sinter.cookspire.dto.UserResponseDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
 
 import jakarta.validation.Valid;
@@ -36,5 +37,7 @@ public interface UserService {
     public SpotlightResponseDTO fetchProfileSpotLight(SpotlightRequestDTO request);
 
     public List<SpotlightResponseDTO> fetchSuggestedUsers(@Valid String email);
+
+    public List<UserResponseDTO> fetchTrendingProfile();
 
 }

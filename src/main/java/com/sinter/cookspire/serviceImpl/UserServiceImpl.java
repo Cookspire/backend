@@ -26,6 +26,7 @@ import com.sinter.cookspire.dto.SpotlightRequestDTO;
 import com.sinter.cookspire.dto.SpotlightResponseDTO;
 import com.sinter.cookspire.dto.UserDTO;
 import com.sinter.cookspire.dto.UserGeneralAnalysisDTO;
+import com.sinter.cookspire.dto.UserResponseDTO;
 import com.sinter.cookspire.dto.VerifyUserDTO;
 import com.sinter.cookspire.entity.Follower;
 import com.sinter.cookspire.entity.Users;
@@ -80,6 +81,8 @@ public class UserServiceImpl implements UserService {
         if (request.getId() != 0 && chkUser.isPresent()) {
             userEntity.setCreatedOn(chkUser.get().getCreatedOn());
             userEntity.setId(chkUser.get().getId());
+            userEntity.setPassword(chkUser.get().getPassword());
+            userEntity.setSalt(chkUser.get().getSalt());
             if (!chkUser.get().getEmail().equals(request.getEmail())) {
                 Optional<Users> chkEmail = userRepo.findByEmail(request.getEmail());
                 if (chkEmail.isPresent()) {
@@ -131,10 +134,13 @@ public class UserServiceImpl implements UserService {
                         HttpStatus.BAD_REQUEST);
             }
         } else if (chkUser.isEmpty()) {
+
             EncryptorDTO encryptData = encryptor.encryptor(request.getPassword());
             userEntity.setPassword(encryptData.getHashText());
             userEntity.setSalt(encryptData.getSalt());
+
         }
+
         logger.info("After encryption");
         userEntity.setEmail(request.getEmail());
         userEntity.setCountry(request.getCountry());
@@ -332,9 +338,9 @@ public class UserServiceImpl implements UserService {
         UserGeneralAnalysisDTO response = new UserGeneralAnalysisDTO();
 
         if (chkUser.isPresent()) {
-            response.setFollowerCount(followerRepo.countUserFollowers(userId));
+            response.setFollowerCount(followerRepo.countUserFollowing(userId));
 
-            response.setFollowingCount(followerRepo.countUserFollowing(userId));
+            response.setFollowingCount(followerRepo.countUserFollowers(userId));
 
             response.setPostCount(postRepo.findAllByUsers(chkUser.get()).size());
 
@@ -447,6 +453,27 @@ public class UserServiceImpl implements UserService {
             throw new ApplicationException(msgSrc.getMessage("User.NotFound", null, Locale.ENGLISH),
                     HttpStatus.NOT_FOUND);
         }
+
+    }
+
+    @Override
+    public List<UserResponseDTO> fetchTrendingProfile() {
+
+        List<UserResponseDTO> verifiedUsers = new ArrayList<UserResponseDTO>();
+
+        List<Users> trendingUsers = userRepo.findAllByIsVerifiedTrue();
+
+        int i = 0;
+        for (var user : trendingUsers) {
+            if (i == 10)
+                break;
+            verifiedUsers
+                    .add(new UserResponseDTO(user.getUsername(), user.getEmail(), user.getCountry(), user.isVerified(),
+                            user.getImageName(), user.getImageType(), user.getImageData()));
+            i++;
+        }
+
+        return verifiedUsers;
 
     }
 

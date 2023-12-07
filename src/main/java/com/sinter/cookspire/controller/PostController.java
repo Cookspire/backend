@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,11 +52,8 @@ public class PostController {
         if (null != file) {
             try {
                 logger.info("Entering persist post with image logic");
-                if (imageSign.processImageFormat(file.getInputStream())
-                        && (file.getOriginalFilename() != null
-                                && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
-                                ||
-                                file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))) {
+                if (imageSign.processImageFormat(file.getInputStream(), file.getContentType())
+                        && (file.getOriginalFilename() != null)) {
 
                     request.setImageData(file.getBytes());
                     request.setImageType(file.getContentType());
@@ -89,14 +85,15 @@ public class PostController {
         return new ResponseEntity<>(postService.fetchPost(postId), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/fetchAll/post/user", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetcAllPost(@PathParam(value = "userId") @Valid Long userId) {
+    @PostMapping(value = "/fetchAll/post", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchAllPost(@RequestParam(value = "currentUser") @Valid String currentUser,
+            @RequestParam(value = "fetchUser") @Valid String fetchUser) {
         logger.info("Entering fetchAll post logic");
-        return new ResponseEntity<>(postService.fetchAllPost(userId), HttpStatus.OK);
+        return new ResponseEntity<>(postService.fetchAllPost(currentUser, fetchUser), HttpStatus.OK);
     }
 
     @PostMapping(value = "/fetchAll/post/user/follower", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetcAllFollowersPost(@PathParam(value = "userId") @Valid Long userId) {
+    public ResponseEntity<?> fetchAllFollowersPost(@PathParam(value = "userId") @Valid Long userId) {
         logger.info("Entering fetchAll followers post logic");
         return new ResponseEntity<>(postService.fetchAllFollowersPost(userId), HttpStatus.OK);
     }

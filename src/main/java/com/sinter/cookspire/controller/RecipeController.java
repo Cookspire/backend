@@ -63,7 +63,7 @@ public class RecipeController {
         if (null != file) {
             try {
                 logger.info("Entering persist recipe with image logic");
-                if (imageSign.processImageFormat(file.getInputStream())
+                if (imageSign.processImageFormat(file.getInputStream(), file.getContentType())
                         && (file.getOriginalFilename() != null
                                 && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
                                 ||
@@ -112,15 +112,15 @@ public class RecipeController {
     }
 
     @PostMapping(value = "/fetch/recipe/course", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchRecipeByCourse(@RequestParam(value = "name") String course) {
+    public ResponseEntity<?> fetchRecipeByCourse(@RequestParam(value = "name") String course, @RequestParam(value = "pageNumber") int pageNumber) {
         logger.info("Entering fetch recipes by course logic");
-        return new ResponseEntity<>(recipeService.fetchRecipesByCourse(course), HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.fetchRecipesByCourse(course, pageNumber), HttpStatus.OK);
     }
 
     @PostMapping(value = "/fetch/recipe/cuisine", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> fetchRecipeByCuisine(@RequestParam(value = "name") String cuisine) {
+    public ResponseEntity<?> fetchRecipeByCuisine(@RequestParam(value = "name") String cuisine, @RequestParam(value = "pageNumber") int pageNumber) {
         logger.info("Entering fetch recipes by cuisine logic");
-        return new ResponseEntity<>(recipeService.fetchRecipesByCuisine(cuisine), HttpStatus.OK);
+        return new ResponseEntity<>(recipeService.fetchRecipesByCuisine(cuisine, pageNumber), HttpStatus.OK);
     }
 
     @PostMapping(value = "/fetch/recipe", produces = MediaType.APPLICATION_JSON_VALUE)

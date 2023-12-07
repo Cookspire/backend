@@ -76,6 +76,12 @@ public class UserController {
         return new ResponseEntity<>(userService.fetchProfileSpotLight(request), HttpStatus.OK);
     }
 
+      @PostMapping(value = "/fetch/trending/profile", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> fetchTrendingProfile() {
+        logger.info("Entering fetch trending profile logic");
+        return new ResponseEntity<>(userService.fetchTrendingProfile(), HttpStatus.OK);
+    }
+
     @PostMapping(value = "/fetch/suggested/user", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> fetchSuggestedUsers(@RequestParam(value = "email") @Valid String email) {
         logger.info("Entering fetch suggested users logic");
@@ -91,7 +97,7 @@ public class UserController {
 
         logger.info("Entering vaidate image signature logic");
         try {
-            if (imageSign.processImageFormat(file.getInputStream())
+            if (imageSign.processImageFormat(file.getInputStream(), file.getContentType())
                     && (file.getOriginalFilename() != null && (file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))
                             ||
                             file.getContentType().equals(MediaType.IMAGE_JPEG_VALUE))) {
