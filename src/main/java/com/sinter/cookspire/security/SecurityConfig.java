@@ -32,7 +32,7 @@ public class SecurityConfig {
                 } else {
                         http.csrf((csrf) -> csrf.disable()).authorizeHttpRequests((requests) -> requests
                                         .requestMatchers("/verify/user/**", "/persist/user", "/fetchAll/trending/post/**","/refresh/token", "/docs/**",
-                                                        "/swagger-ui/**",
+                                                        "/swagger-ui/**","/actuators/**","/actuators/prometheus/**",
                                                         "v3/api-docs/**")
                                         .permitAll()
                                         .anyRequest().authenticated()).sessionManagement(
