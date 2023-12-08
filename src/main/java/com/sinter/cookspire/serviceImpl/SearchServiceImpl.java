@@ -1,19 +1,26 @@
 package com.sinter.cookspire.serviceImpl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.sinter.cookspire.dto.RecipeDTO;
+import com.sinter.cookspire.dto.RecipePaginationDTO;
 import com.sinter.cookspire.dto.RecipeResponseDTO;
+import com.sinter.cookspire.dto.SearchRecipePageDTO;
 import com.sinter.cookspire.dto.SearchRecipeRequestDTO;
+import com.sinter.cookspire.dto.SearchRecipeResponseDTO;
 import com.sinter.cookspire.dto.SearchRequestDTO;
 import com.sinter.cookspire.dto.SearchSuggestionDTO;
 import com.sinter.cookspire.dto.UserResponseDTO;
@@ -92,14 +99,24 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<RecipeResponseDTO> searchRecipe(SearchRequestDTO request) {
+    public RecipePaginationDTO searchRecipe(SearchRecipePageDTO request) {
 
-        List<Recipe> recipeFilter = recipeRepo.filterRecipe(request.getQuery());
+        Pageable pagination = PageRequest.of(request.getCurrentPageNumber(), 20);
+        Page<Recipe> recipeFilter = recipeRepo.filterGlobalRecipe(request.getQuery(), pagination);
         logger.info("SQL filter for search query complete.");
-        List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
-        for (var recipe : recipeFilter) {
-            recipeResponse.add(recipeService.fetchRecipeByIngredient(recipe.getId()));
+        RecipePaginationDTO recipeResponse = new RecipePaginationDTO();
+        List<RecipeDTO> recipeList = new ArrayList<RecipeDTO>();
+        for (var recipeEntity : recipeFilter) {
+            recipeList.add(new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
+                    recipeEntity.getLevel(),
+                    recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
+                    recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
+                    recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
+                    0, recipeEntity.getImageName(), recipeEntity.getImageType(),
+                    recipeEntity.getImageData()));
         }
+        recipeResponse.setRecipe(recipeList);
+        recipeResponse.setMaxPageNumber(recipeFilter.getTotalPages() - 1);
         logger.info("Exit from recipe filter.");
         return recipeResponse;
 
@@ -121,26 +138,32 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public boolean searchPaginationRecipe(SearchRecipeRequestDTO request) {
-        // TODO Auto-generated method stub
+    public SearchRecipeResponseDTO searchPaginationRecipe(SearchRecipeRequestDTO request) {
 
-        Pageable pagination = PageRequest.of(1, 20, Sort.by("name").ascending());
+        SearchRecipeResponseDTO response = new SearchRecipeResponseDTO();
+        Pageable pagination = PageRequest.of(request.getCurrentPageNumber(), 20);
 
-        // List<Recipe> recipeFilter = new ArrayList<Recipe>();
-        // if (request.getDietPlan().length() > 0 && request.getTiming().length() > 0) {
-        //     recipeFilter = recipeRepo.filterRecipeByDietAndTiming(request.getQuery(),
-        //             request.getDietPlan(), request.getFromTime(), request.getToTime(), pagination);
-        // } else if (request.getDietPlan().length() > 0) {
-        //     recipeFilter = recipeRepo.filterRecipeByDiet(request.getQuery(), request.getDietPlan());
-        // } else if (request.getTiming().length() > 0) {
-        //     recipeFilter = recipeRepo.filterRecipeByTiming(request.getQuery(), request.getTiming());
-        // }
-        // List<RecipeResponseDTO> recipeResponse = new ArrayList<RecipeResponseDTO>();
-        // for (var recipe : recipeFilter) {
-        //     recipeResponse.add(recipeService.fetchRecipeByIngredient(recipe.getId()));
-        // }
+        Page<Recipe> recipeFilter = recipeRepo.filterRecipe(
+                request.getDietPlan(), request.getFromTime(), request.getToTime(), request.getCourse(),
+                request.getCuisine(),
+                request.getQuery(), pagination);
 
-        return false;
+        List<RecipeDTO> recipes = new ArrayList<>();
+        for (var recipeEntity : recipeFilter) {
+            recipes.add(
+                    new RecipeDTO(recipeEntity.getId(), recipeEntity.getInstruction(), recipeEntity.getName(),
+                            recipeEntity.getLevel(),
+                            recipeEntity.getDescription(), recipeEntity.getCuisine(), recipeEntity.getCourse(),
+                            recipeEntity.getDiet(), recipeEntity.getPrep_time_mins(), recipeEntity.getCook_time_mins(),
+                            recipeEntity.getCreatedOn(), recipeEntity.getUpdatedOn(), recipeEntity.is_Verified(),
+                            0, recipeEntity.getImageName(), recipeEntity.getImageType(),
+                            recipeEntity.getImageData()));
+        }
+
+        response.setRecipe(recipes);
+        response.setMaxPageNumber(recipeFilter.getTotalPages() - 1);
+
+        return response;
     }
 
 }

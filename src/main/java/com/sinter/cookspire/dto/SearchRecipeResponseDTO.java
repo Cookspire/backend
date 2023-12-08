@@ -9,12 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeResponseDTO {
-    
-    private RecipeDTO recipe;
+public class SearchRecipeResponseDTO {
 
-    private List<IngredientDTO> ingredient;
+    private List<RecipeDTO> recipe;
 
-    private int pageNumber;
+    private int maxPageNumber;
 
 }

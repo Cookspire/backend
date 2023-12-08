@@ -13,4 +13,10 @@ public class SearchRecipeRequestDTO {
 
     private int toTime;
 
+    private String cuisine;
+
+    private String course;
+
+    private int currentPageNumber;
+
 }
